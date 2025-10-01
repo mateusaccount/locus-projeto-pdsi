@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HackIF - Ideias para a Comunidade</title>
+    <style>
+        body { font-family: sans-serif; line-height: 1.6; margin: 2em; color: #333; }
+        .container { max-width: 800px; margin: auto; }
+        .ideia { border: 1px solid #ccc; padding: 1em; margin-bottom: 1em; border-radius: 5px; background-color: #f9f9f9; }
+        .ideia h2 { margin-top: 0; }
+        .ideia-meta { font-size: 0.9em; color: #555; }
+        a { color: #0056b3; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Ideias Aprovadas pela Comunidade</h1>
+
+        {% comment %}
+            Este link só será exibido se o usuário estiver logado.
+            É a forma correta de oferecer ações restritas.
+        {% endcomment %}
+        {% if user.is_authenticated %}
+            <p><a href="{% url 'app:submeter_ideia' %}"><b>+ Submeter Nova Ideia</b></a></p>
+        {% endif %}
+
+        <hr>
+
+        {% comment %}
+            Loop principal que itera sobre a lista de 'ideias' enviada pela view.
+            Para cada 'ideia' na lista, um bloco de HTML é renderizado.
+        {% endcomment %}
+        {% for ideia in ideias %}
+            <div class="ideia">
+                <h2>
+                    <a href="{% url 'app:detalhe_ideia' ideia.id %}">{{ ideia.titulo }}</a>
+                </h2>
+                <p class="ideia-meta">
+                    <strong>Autor:</strong> {{ ideia.autor.username }} <br>
+                    <strong>Data:</strong> {{ ideia.data_criacao|date:"d/m/Y" }}
+                </p>
+                <p>{{ ideia.descricao }}</p>
+            </div>
+        {% empty %}
+            {% comment %}
+                Este bloco é exibido se a lista de 'ideias' estiver vazia.
+            {% endcomment %}
+            <p>Ainda não há ideias aprovadas. Seja o primeiro a submeter uma!</p>
+        {% endfor %}
+
+    </div>
+
+</body>
+</html>
