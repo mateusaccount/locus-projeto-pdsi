@@ -2,16 +2,41 @@
 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
+from django.db.models import Count, Q
 from .models import Ideia, Comentario, Votacao, Problema
 from .forms import IdeiaForm
 
-# View para a página inicial que lista as ideias aprovadas
 def lista_ideias(request):
-    ideias_aprovadas = Ideia.objects.filter(status='aprovada').order_by('-data_criacao')
+    # --- 1. LÓGICA PARA AS IDEIAS EM DESTAQUE ---
+    
+    # Explicando a consulta:
+    # .annotate() é uma função poderosa que adiciona um novo "campo calculado" a cada
+    # objeto do resultado da consulta.
+    # Estamos criando um campo chamado 'pontuacao'.
+    # O valor de 'pontuacao' será: a contagem de votos (Count) que são do tipo 'upvote'
+    # MENOS a contagem de votos que são do tipo 'downvote'.
+    # O objeto Q() nos ajuda a criar essa condição de contagem.
+    ideias_destaque = Ideia.objects.filter(status='aprovada').annotate(
+        pontuacao=Count('votos', filter=Q(votos__tipo='upvote')) - Count('votos', filter=Q(votos__tipo='downvote'))
+    ).order_by('-pontuacao')[:3] # Ordenamos pela maior pontuação e pegamos os 3 primeiros.
+
+    # --- 2. LÓGICA PRINCIPAL DA LISTA (com filtros, como já tínhamos) ---
+    area_selecionada = request.GET.get('area')
+    ideias_aprovadas = Ideia.objects.filter(status='aprovada')
+    if area_selecionada:
+        ideias_aprovadas = ideias_aprovadas.filter(problema_alvo__area=area_selecionada)
+    ideias_aprovadas = ideias_aprovadas.order_by('-data_criacao')
+    
+    areas_disponiveis = Problema.AREA_CHOICES
+
     contexto = {
-        'ideias': ideias_aprovadas
+        'ideias_destaque': ideias_destaque, # Enviamos a nova lista para o template
+        'ideias': ideias_aprovadas,
+        'areas': areas_disponiveis,
+        'area_selecionada': area_selecionada,
     }
     return render(request, 'app/lista_ideias.html', contexto)
+
 
 # View para a página de detalhes de uma ideia específica
 def detalhe_ideia(request, ideia_id):
@@ -57,3 +82,4 @@ def votar_ideia(request, ideia_id, tipo_voto):
             voto_existente.tipo = tipo_voto
             voto_existente.save()
     return redirect('app:detalhe_ideia', ideia_id=ideia.id)
+

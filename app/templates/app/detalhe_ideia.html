@@ -5,16 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ ideia.titulo }} - HackIF</title>
     <style>
-        /* Adicione este CSS ao seu <style> tag */
+        body { font-family: sans-serif; line-height: 1.6; margin: 2em; color: #333; }
+        .container { max-width: 800px; margin: auto; }
+        .ideia-meta { font-size: 0.9em; color: #555; }
         .votacao { display: flex; align-items: center; gap: 10px; margin: 1em 0; }
-        .votacao a { 
-            display: inline-block;
-            padding: 8px 12px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-weight: bold;
-        }
+        .votacao a { display: inline-block; padding: 8px 12px; border: 1px solid #ccc; border-radius: 4px; font-weight: bold; text-decoration: none; }
         .votacao-score { font-size: 1.5em; font-weight: bold; }
+        a { color: #0056b3; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .comentarios-secao { margin-top: 2em; border-top: 1px solid #ccc; padding-top: 1em;}
+        .comentario { border-bottom: 1px solid #eee; padding: 0.8em 0; }
+        .comentario-meta { font-size: 0.8em; color: #666; }
     </style>
 </head>
 <body>
@@ -23,7 +24,10 @@
 
         <h1>{{ ideia.titulo }}</h1>
         <p class="ideia-meta">
-            </p>
+            <strong>Autor:</strong> {{ ideia.autor.username }} <br>
+            <strong>Data:</strong> {{ ideia.data_criacao|date:"d/m/Y H:i" }} <br>
+            <strong>Status:</strong> {{ ideia.get_status_display }}
+        </p>
 
         {% if user.is_authenticated %}
         <div class="votacao">
@@ -42,7 +46,19 @@
         <p>{{ ideia.descricao|linebreaks }}</p>
 
         <div class="comentarios-secao">
-            </div>
-    </div>
+            <h3>Comentários</h3>
+            
+            {% for comentario in comentarios %}
+                <div class="comentario">
+                    <p>{{ comentario.conteudo }}</p>
+                    <p class="comentario-meta">
+                        Por: <strong>{{ comentario.autor.username }}</strong> em {{ comentario.data_criacao|date:"d/m/Y" }}
+                    </p>
+                </div>
+            {% empty %}
+                <p>Ainda não há comentários para esta ideia.</p>
+            {% endfor %}
+        </div>
+        </div>
 </body>
 </html>
