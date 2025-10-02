@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - HackIF</title>
+    <style>
+        body { font-family: sans-serif; margin: 2em; background-color: #f4f4f4; }
+        .container { max-width: 400px; margin: auto; padding: 2em; border: 1px solid #ccc; border-radius: 5px; background-color: #fff; }
+        form p { display: flex; flex-direction: column; }
+        input { margin-top: 5px; padding: 8px; width: 100%; box-sizing: border-box; }
+        button { margin-top: 1em; padding: 10px; background-color: #0056b3; color: white; border: none; cursor: pointer; width: 100%; }
+        .errorlist { list-style-type: none; padding: 0; color: red; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Login</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Entrar</button>
+        </form>
+        <p><a href="{% url 'app:cadastro' %}">Não tem uma conta? Cadastre-se</a></p>
+    </div>
+</body>
+</html>

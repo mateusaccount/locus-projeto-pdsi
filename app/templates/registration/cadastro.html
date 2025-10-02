@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastro - HackIF</title>
+    <style>
+        body { font-family: sans-serif; margin: 2em; background-color: #f4f4f4; }
+        .container { max-width: 400px; margin: auto; padding: 2em; border: 1px solid #ccc; border-radius: 5px; background-color: #fff; }
+        form p { display: flex; flex-direction: column; }
+        input, select { margin-top: 5px; padding: 8px; width: 100%; box-sizing: border-box; }
+        button { margin-top: 1em; padding: 10px; background-color: #0056b3; color: white; border: none; cursor: pointer; width: 100%; }
+        .helptext { font-size: 0.8em; color: gray; margin: 0; }
+        ul.errorlist { list-style-type: none; padding: 0; color: red; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Cadastro de Novo Usuário</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Cadastrar</button>
+        </form>
+        <p><a href="{% url 'app:login' %}">Já tem uma conta? Faça login</a></p>
+    </div>
+</body>
+</html>

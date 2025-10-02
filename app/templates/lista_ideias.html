@@ -5,31 +5,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HackIF - Ideias para a Comunidade</title>
     <style>
-        body { font-family: sans-serif; line-height: 1.6; margin: 2em; color: #333; }
-        .container { max-width: 800px; margin: auto; }
-        .ideia { border: 1px solid #ccc; padding: 1em; margin-bottom: 1em; border-radius: 5px; background-color: #f9f9f9; }
+        body { font-family: sans-serif; line-height: 1.6; margin: 0; padding: 0; color: #333; background-color: #f4f4f4; }
+        .navbar { background-color: #fff; padding: 1em; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .navbar-content { max-width: 800px; margin: auto; display: flex; justify-content: space-between; align-items: center; }
+        .navbar a { color: #0056b3; text-decoration: none; }
+        .container { max-width: 800px; margin: 2em auto; }
+        .ideia { border: 1px solid #ccc; padding: 1em; margin-bottom: 1em; border-radius: 5px; background-color: #fff; }
         .ideia h2 { margin-top: 0; font-size: 1.2em; }
         .ideia-meta { font-size: 0.9em; color: #555; }
-        a { color: #0056b3; text-decoration: none; }
-        a:hover { text-decoration: underline; }
-
-        /* Estilos para a nova seção de destaques */
         .destaques { background-color: #e7f3ff; border: 1px solid #b3d7ff; border-radius: 5px; padding: 1em; margin-bottom: 2em; }
         .destaques h2 { margin-top: 0; color: #004085; }
         .destaque-ideia { display: flex; justify-content: space-between; align-items: center; padding: 0.5em 0; border-bottom: 1px solid #b3d7ff; }
         .destaque-ideia:last-child { border-bottom: none; }
         .destaque-score { font-weight: bold; font-size: 1.2em; color: #004085; }
-        
-        /* Estilos para os filtros */
-        .filtros { margin-bottom: 1.5em; padding-bottom: 1em; border-bottom: 1px solid #eee; }
+        .filtros { margin-bottom: 1.5em; padding: 1em; background-color: #fff; border-radius: 5px; }
         .filtros a { display: inline-block; padding: 6px 12px; margin: 0 5px 5px 0; border: 1px solid #ccc; border-radius: 15px; background-color: #f0f0f0; font-size: 0.9em; }
         .filtros a.ativo, .filtros a:hover { background-color: #0056b3; color: white; border-color: #0056b3; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Plataforma de Ideias</h1>
+    <div class="navbar">
+        <div class="navbar-content">
+            <a href="{% url 'app:lista_ideias' %}" style="font-weight: bold; font-size: 1.2em;">HackIF</a>
+            <div>
+                {% if user.is_authenticated %}
+                <span>Olá, {{ user.username }}!</span>
+<form action="{% url 'app:logout' %}" method="post" style="display: inline; margin-left: 1em;">
+    {% csrf_token %}
+    <button type="submit" style="background: none; border: none; padding: 0; color: #0056b3; text-decoration: underline; cursor: pointer; font-size: 1em;">Sair</button>
+</form>
+                {% else %}
+                    <a href="{% url 'app:login' %}">Entrar</a>
+                    <a href="{% url 'app:cadastro' %}" style="margin-left: 1em;">Cadastrar</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
 
+    <div class="container">
         <div class="destaques">
             <h2>🏆 Ideias em Destaque</h2>
             {% for ideia in ideias_destaque %}
@@ -46,8 +59,9 @@
                 <p>Ainda não há ideias com votos para destacar.</p>
             {% endfor %}
         </div>
+
         {% if user.is_authenticated %}
-            <p><a href="{% url 'app:submeter_ideia' %}"><b>+ Submeter Nova Ideia</b></a></p>
+            <p><a href="{% url 'app:submeter_ideia' %}" style="font-weight: bold;">+ Submeter Nova Ideia</a></p>
         {% endif %}
         
         <div class="filtros">
@@ -65,7 +79,8 @@
                 <p class="ideia-meta">
                     <strong>Autor:</strong> {{ ideia.autor.username }} | <strong>Data:</strong> {{ ideia.data_criacao|date:"d/m/Y" }}
                 </p>
-                <p>{{ ideia.descricao|truncatewords:30 }}</p> </div>
+                <p>{{ ideia.descricao|truncatewords:30 }}</p>
+            </div>
         {% empty %}
             <p>Nenhuma ideia encontrada para o filtro selecionado.</p>
         {% endfor %}

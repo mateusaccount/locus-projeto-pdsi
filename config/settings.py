@@ -52,13 +52,17 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'config.urls'
 
+# config/settings.py
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        
+        'DIRS': [BASE_DIR / 'app/templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
+                # ... (o resto das opções continua igual)
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
@@ -66,7 +70,6 @@ TEMPLATES = [
         },
     },
 ]
-
 WSGI_APPLICATION = 'config.wsgi.application'
 
 
@@ -123,3 +126,6 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'app.CustomUsuario'
+
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
