@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Painel Principal - HackIF</title>
+    <style>
+        body { font-family: sans-serif; line-height: 1.6; margin: 0; padding: 0; color: #333; background-color: #f4f4f4; }
+        .navbar { background-color: #fff; padding: 1em; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .navbar-content { max-width: 900px; margin: auto; display: flex; justify-content: space-between; align-items: center; }
+        .navbar a { color: #0056b3; text-decoration: none; }
+        .container { max-width: 900px; margin: 2em auto; text-align: center; }
+        .welcome-message { margin-bottom: 2em; }
+        .actions { display: flex; justify-content: center; gap: 2em; }
+        .action-card {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 2em;
+            width: 300px;
+            text-decoration: none;
+            color: #333;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .action-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .action-card h2 { margin-top: 0; color: #0056b3; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="navbar-content">
+            <a href="{% url 'app:dashboard' %}" style="font-weight: bold; font-size: 1.2em;">HackIF</a>
+            <div>
+                {% if user.is_authenticated %}
+                    <span>Olá, {{ user.first_name|default:user.username }}!</span>
+                    
+                    <form action="{% url 'app:logout' %}" method="post" style="display: inline; margin-left: 1em;">
+                        {% csrf_token %}
+                        <button type="submit" style="background: none; border: none; padding: 0; color: #0056b3; text-decoration: underline; cursor: pointer; font-size: inherit; font-family: inherit;">Sair</button>
+                    </form>
+                {% else %}
+                    <a href="{% url 'app:login' %}">Entrar</a>
+                    <a href="{% url 'app:cadastro' %}" style="margin-left: 1em;">Cadastrar</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="welcome-message">
+            <h1>Bem-vindo(a) de volta, {{ user.first_name|default:user.username }}!</h1>
+            <p>O que você gostaria de fazer hoje?</p>
+        </div>
+
+        <div class="actions">
+            <a href="{% url 'app:lista_problemas' %}" class="action-card">
+                <h2>Problemas</h2>
+                <p>Veja os problemas relatados pela comunidade ou relate um novo desafio.</p>
+            </a>
+            <a href="{% url 'app:lista_ideias' %}" class="action-card">
+                <h2>Ideias</h2>
+                <p>Explore as soluções propostas, vote nas melhores e submeta suas próprias ideias.</p>
+            </a>
+        </div>
+
+        {% if messages %}
+    <div class="messages" style="padding: 1em; margin-bottom: 1em; border-radius: 5px; background-color: #d4edda; color: #155724;">
+        {% for message in messages %}
+            <p{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</p>
+        {% endfor %}
+    </div>
+{% endif %}
+
+    </div>
+</body>
+</html>

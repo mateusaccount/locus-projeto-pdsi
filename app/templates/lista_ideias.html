@@ -26,14 +26,23 @@
 <body>
     <div class="navbar">
         <div class="navbar-content">
-            <a href="{% url 'app:lista_ideias' %}" style="font-weight: bold; font-size: 1.2em;">HackIF</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'app:dashboard' %}" style="font-weight: bold; font-size: 1.2em;">HackIF</a>
+            {% else %}
+                <a href="{% url 'app:lista_ideias' %}" style="font-weight: bold; font-size: 1.2em;">HackIF</a>
+            {% endif %}
+            
             <div>
                 {% if user.is_authenticated %}
-                <span>Olá, {{ user.username }}!</span>
-<form action="{% url 'app:logout' %}" method="post" style="display: inline; margin-left: 1em;">
-    {% csrf_token %}
-    <button type="submit" style="background: none; border: none; padding: 0; color: #0056b3; text-decoration: underline; cursor: pointer; font-size: 1em;">Sair</button>
-</form>
+                    <a href="{% url 'app:lista_problemas' %}" style="margin-right: 1em;">Problemas</a>
+                    <a href="{% url 'app:lista_ideias' %}" style="margin-right: 1em;">Ideias</a>
+                    <span>Olá, {{ user.first_name|default:user.username }}!</span>
+                    
+                    <form action="{% url 'app:logout' %}" method="post" style="display: inline; margin-left: 1em;">
+                        {% csrf_token %}
+                        <button type="submit" style="background: none; border: none; padding: 0; color: #0056b3; text-decoration: underline; cursor: pointer; font-size: inherit; font-family: inherit;">Sair</button>
+                    </form>
+    
                 {% else %}
                     <a href="{% url 'app:login' %}">Entrar</a>
                     <a href="{% url 'app:cadastro' %}" style="margin-left: 1em;">Cadastrar</a>
@@ -78,6 +87,9 @@
                 <h2><a href="{% url 'app:detalhe_ideia' ideia.id %}">{{ ideia.titulo }}</a></h2>
                 <p class="ideia-meta">
                     <strong>Autor:</strong> {{ ideia.autor.username }} | <strong>Data:</strong> {{ ideia.data_criacao|date:"d/m/Y" }}
+                    {% if ideia.problema_alvo %}
+                        <br><strong>Problema:</strong> <a href="{% url 'app:detalhe_problema' ideia.problema_alvo.id %}">{{ ideia.problema_alvo.titulo }}</a>
+                    {% endif %}
                 </p>
                 <p>{{ ideia.descricao|truncatewords:30 }}</p>
             </div>

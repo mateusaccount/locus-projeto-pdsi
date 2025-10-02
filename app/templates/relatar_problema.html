@@ -2,20 +2,8 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Submeter Nova Ideia - HackIF</title>
-    <style>
-        body { font-family: sans-serif; line-height: 1.6; margin: 0; padding: 0; color: #333; background-color: #f4f4f4; }
-        .navbar { background-color: #fff; padding: 1em; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .navbar-content { max-width: 800px; margin: auto; display: flex; justify-content: space-between; align-items: center; }
-        .navbar a { color: #0056b3; text-decoration: none; }
-        .container { max-width: 800px; margin: 2em auto; padding: 2em; background-color: #fff; border-radius: 5px; }
-        form p { display: flex; flex-direction: column; margin-bottom: 1em; }
-        form label { margin-bottom: 0.5em; font-weight: bold; }
-        input, select, textarea { padding: 0.5em; font-size: 1em; border: 1px solid #ccc; border-radius: 4px; width: 100%; box-sizing: border-box; }
-        button { padding: 0.7em 1.5em; background-color: #0056b3; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 1em; }
-        button:hover { background-color: #004494; }
-    </style>
+    <title>Relatar Problema - HackIF</title>
+    <style>body { font-family: sans-serif; line-height: 1.6; margin: 0; padding: 0; color: #333; background-color: #f4f4f4; } .navbar { background-color: #fff; padding: 1em; box-shadow: 0 2px 4px rgba(0,0,0,0.1); } .navbar-content { max-width: 800px; margin: auto; display: flex; justify-content: space-between; align-items: center; } .navbar a { color: #0056b3; text-decoration: none; } .container { max-width: 800px; margin: 2em auto; padding: 2em; background-color: #fff; border-radius: 5px; } form p { display: flex; flex-direction: column; margin-bottom: 1em; } form label { margin-bottom: 0.5em; font-weight: bold; } input, select, textarea { padding: 0.5em; font-size: 1em; border: 1px solid #ccc; border-radius: 4px; width: 100%; box-sizing: border-box; } button { padding: 0.7em 1.5em; background-color: #0056b3; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 1em; }</style>
 </head>
 <body>
     <div class="navbar">
@@ -44,17 +32,15 @@
             </div>
         </div>
     </div>
-
     <div class="container">
-        <p><a href="{% url 'app:lista_ideias' %}">&larr; Voltar para todas as ideias</a></p>
-        <h1>Submeter Nova Ideia</h1>
-        <p>Preencha o formulário abaixo para compartilhar sua ideia com a comunidade.</p>
+        <p><a href="{% url 'app:lista_problemas' %}">&larr; Voltar para a lista de problemas</a></p>
+        <h1>Relatar um Novo Problema</h1>
+        <p>Viu algo na sua comunidade que precisa de uma solução? Descreva-o abaixo.</p>
         <hr>
-
         <form method="post">
             {% csrf_token %}
             {{ form.as_p }}
-            <button type="submit">Enviar Ideia</button>
+            <button type="submit">Enviar Problema</button>
         </form>
 
         {% if messages %}
