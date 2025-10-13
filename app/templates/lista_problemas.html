@@ -1,59 +1,10 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <title>Problemas Relatados - HackIF</title>
-    <style>body { font-family: sans-serif; line-height: 1.6; margin: 0; padding: 0; color: #333; background-color: #f4f4f4; } .navbar { background-color: #fff; padding: 1em; box-shadow: 0 2px 4px rgba(0,0,0,0.1); } .navbar-content { max-width: 800px; margin: auto; display: flex; justify-content: space-between; align-items: center; } .navbar a { color: #0056b3; text-decoration: none; } .container { max-width: 800px; margin: 2em auto; } .problema { padding: 1em; margin-bottom: 1em; background-color: #fff; border-radius: 5px; border: 1px solid #ddd; }</style>
-</head>
-<body>
-    <div class="navbar">
-        <div class="navbar-content">
-            {% if user.is_authenticated %}
-                <a href="{% url 'app:dashboard' %}" style="font-weight: bold; font-size: 1.2em;">HackIF</a>
-            {% else %}
-                <a href="{% url 'app:lista_ideias' %}" style="font-weight: bold; font-size: 1.2em;">HackIF</a>
-            {% endif %}
-            
-            <div>
-                {% if user.is_authenticated %}
-                    <a href="{% url 'app:lista_problemas' %}" style="margin-right: 1em;">Problemas</a>
-                    <a href="{% url 'app:lista_ideias' %}" style="margin-right: 1em;">Ideias</a>
-                    <span>Olá, {{ user.first_name|default:user.username }}!</span>
-                    
-                    <form action="{% url 'app:logout' %}" method="post" style="display: inline; margin-left: 1em;">
-                        {% csrf_token %}
-                        <button type="submit" style="background: none; border: none; padding: 0; color: #0056b3; text-decoration: underline; cursor: pointer; font-size: inherit; font-family: inherit;">Sair</button>
-                    </form>
-    
-                {% else %}
-                    <a href="{% url 'app:login' %}">Entrar</a>
-                    <a href="{% url 'app:cadastro' %}" style="margin-left: 1em;">Cadastrar</a>
-                {% endif %}
-            </div>
-        </div>
-    </div>
-    <div class="container">
-        <h1>Problemas Relatados pela Comunidade</h1>
-        <p><a href="{% url 'app:relatar_problema' %}" style="font-weight: bold;">+ Relatar Novo Problema</a></p>
-        <hr>
-        {% for problema in problemas %}
-            <div class="problema">
-                <h3><a href="{% url 'app:detalhe_problema' problema.id %}">{{ problema.titulo }}</a></h3>
-                <small><b>Área:</b> {{ problema.get_area_display }} | <b>Localização:</b> {{ problema.localizacao }}</small>
-                <p>{{ problema.descricao }}</p>
-            </div>
-        {% empty %}
-            <p>Nenhum problema foi relatado ainda. Seja o primeiro!</p>
-        {% endfor %}
+{% extends 'base.html' %}
 
-        {% if messages %}
-    <div class="messages" style="padding: 1em; margin-bottom: 1em; border-radius: 5px; background-color: #d4edda; color: #155724;">
-        {% for message in messages %}
-            <p{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</p>
-        {% endfor %}
-    </div>
-{% endif %}
+{% block title %}Problemas Relatados - Locus{% endblock %}
 
-    </div>
-</body>
-</html>
+{% block content %}
+<h1>Problemas Relatados pela Comunidade</h1>
+<p><a href="{% url 'app:relatar_problema' %}" style="font-weight: bold;">+ Relatar Novo Problema</a></p>
+<hr>
+{% for problema in problemas %}<div class="problema"><h3><a href="{% url 'app:detalhe_problema' problema.id %}">{{ problema.titulo }}</a></h3><small><b>Área:</b> {{ problema.get_area_display }} | <b>Localização:</b> {{ problema.localizacao }}</small><p>{{ problema.descricao }}</p></div>{% empty %}<p>Nenhum problema foi relatado ainda. Seja o primeiro!</p>{% endfor %}
+{% endblock %}

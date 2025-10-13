@@ -8,9 +8,8 @@ from .models import Ideia, Comentario, Votacao, Problema
 from .forms import IdeiaForm, CustomUserCreationForm, ProblemaForm, ComentarioForm
 from django.contrib import messages
 
-# View para a página inicial
+
 def lista_ideias(request):
-    # ... (código da view lista_ideias)
     ideias_destaque = Ideia.objects.filter(status='aprovada').annotate(
         pontuacao=Count('votos', filter=Q(votos__tipo='upvote')) - Count('votos', filter=Q(votos__tipo='downvote'))
     ).order_by('-pontuacao')[:3]
@@ -31,41 +30,31 @@ def lista_ideias(request):
     }
     return render(request, 'lista_ideias.html', contexto)
 
-# View para detalhes da ideia
 def detalhe_ideia(request, ideia_id):
     ideia = get_object_or_404(Ideia, pk=ideia_id)
     comentarios = ideia.comentarios.all().order_by('data_criacao')
     
-    # Lógica para o formulário de novo comentário
     if request.method == 'POST':
-        # Apenas usuários logados podem comentar
         if not request.user.is_authenticated:
-            return redirect('app:login') # Redireciona para o login se não estiver logado
+            return redirect('app:login')
 
         comment_form = ComentarioForm(request.POST)
         if comment_form.is_valid():
-            # Cria o objeto de comentário mas não salva no banco ainda
             novo_comentario = comment_form.save(commit=False)
-            # Define o autor como o usuário logado
             novo_comentario.autor = request.user
-            # Define a ideia como a ideia da página atual
             novo_comentario.ideia = ideia
-            # Agora salva o comentário completo no banco de dados
             novo_comentario.save()
-            # Redireciona para a mesma página para ver o novo comentário
             return redirect('app:detalhe_ideia', ideia_id=ideia.id)
     else:
-        # Se não for POST, apenas cria um formulário em branco
         comment_form = ComentarioForm()
 
     contexto = {
         'ideia': ideia,
         'comentarios': comentarios,
-        'comment_form': comment_form, # Passa o formulário para o template
+        'comment_form': comment_form,
     }
     return render(request, 'detalhe_ideia.html', contexto)
 
-# View para submeter ideia
 @login_required
 def submeter_ideia(request):
     if request.method == 'POST':
@@ -83,10 +72,8 @@ def submeter_ideia(request):
     }
     return render(request, 'submeter_ideia.html', contexto)
 
-# View para votar
 @login_required
 def votar_ideia(request, ideia_id, tipo_voto):
-    # ... (código da view votar_ideia)
     ideia = get_object_or_404(Ideia, pk=ideia_id)
     usuario = request.user
     voto_existente, criado = Votacao.objects.get_or_create(
@@ -102,9 +89,7 @@ def votar_ideia(request, ideia_id, tipo_voto):
             voto_existente.save()
     return redirect('app:detalhe_ideia', ideia_id=ideia.id)
 
-# View para cadastro de usuário
 def cadastro(request):
-    # ... (código da view cadastro)
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
@@ -117,7 +102,6 @@ def cadastro(request):
     contexto = {'form': form}
     return render(request, 'registration/cadastro.html', contexto)
 
-# --- VIEWS PARA PROBLEMAS ---
 
 def lista_problemas(request):
     problemas = Problema.objects.all().order_by('-id')
@@ -143,16 +127,10 @@ def relatar_problema(request):
 
 @login_required
 def dashboard(request):
-    # Por enquanto, esta view apenas renderiza o template.
-    # No futuro, poderíamos adicionar lógicas como "suas ideias", "seus comentários", etc.
     return render(request, 'dashboard.html')
 
 def detalhe_problema(request, problema_id):
-    # Pega o objeto do problema específico, ou mostra um erro 404 se não existir.
     problema = get_object_or_404(Problema, pk=problema_id)
-
-    # Pega todas as ideias associadas a este problema.
-    # Usamos problema.ideia_set.all() para acessar a relação reversa.
     ideias_relacionadas = problema.ideia_set.filter(status='aprovada').annotate(
         pontuacao=Count('votos', filter=Q(votos__tipo='upvote')) - Count('votos', filter=Q(votos__tipo='downvote'))
     ).order_by('-pontuacao')
@@ -167,7 +145,6 @@ def detalhe_problema(request, problema_id):
 def reportar_ideia(request, ideia_id):
     ideia = get_object_or_404(Ideia, pk=ideia_id)
     if request.method == 'POST':
-        # adiciona o usuário ao campo ManyToMany
         ideia.usuarios_que_reportaram.add(request.user)
         messages.success(request, 'Denúncia recebida. Agradecemos sua colaboração!')
         return redirect('app:detalhe_ideia', ideia_id=ideia.id)
