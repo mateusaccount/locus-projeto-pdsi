@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
     <title>{% block title %}Locus - HackIF{% endblock %}</title>
     <style>
         /* CSS Global para todo o site */
@@ -25,9 +26,9 @@
     <div class="navbar">
     <div class="navbar-content">
         {% if user.is_authenticated %}
-            <a href="{% url 'app:dashboard' %}" style="font-weight: bold; font-size: 1.2em;">LOCUS</a>
+            <a href="{% url 'app:dashboard' %}" style="font-weight: bold; font-size: 1.2em;">LÓCUS</a>
         {% else %}
-            <a href="{% url 'app:lista_ideias' %}" style="font-weight: bold; font-size: 1.2em;">LOCUS</a>
+            <a href="{% url 'app:lista_ideias' %}" style="font-weight: bold; font-size: 1.2em;">LÓCUS</a>
         {% endif %}
         
         <div>
