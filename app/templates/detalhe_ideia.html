@@ -1,36 +1,27 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}{{ ideia.titulo }} - Locus{% endblock %}
 
-{% block extra_css %}
-<style>
-    .ideia-meta { font-size: 0.9em; color: #555; } .votacao { display: flex; align-items: center; gap: 10px; margin: 1em 0; } .votacao a { display: inline-block; padding: 8px 12px; border: 1px solid #ccc; border-radius: 4px; font-weight: bold; text-decoration: none; } .votacao-score { font-size: 1.5em; font-weight: bold; } .comentarios-secao { margin-top: 2em; border-top: 1px solid #ccc; padding-top: 1em;} .comentario { border-bottom: 1px solid #eee; padding: 0.8em 0; } .comentario-meta { font-size: 0.8em; color: #666; }
-</style>
-{% endblock %}
-
 {% block content %}
-<div style="text-align: right; font-size: 0.8em; color: #6c757d;">
-    <span>({{ ideia.total_reports }} denúncias)</span>
-    {% if user.is_authenticated %}
-        {% if user in ideia.usuarios_que_reportaram.all %}
-            <span style="margin-left: 5px;">(Você já denunciou)</span>
-        {% else %}
-            <form action="{% url 'app:reportar_ideia' ideia.id %}" method="post" style="display: inline;">
-                {% csrf_token %}
-                <button type="submit" onclick="return confirm('Tem certeza que deseja denunciar esta ideia como imprópria?');" style="background: none; border: none; color: #dc3545; text-decoration: underline; cursor: pointer; font-size: 1em; margin-left: 5px;">Reportar</button>
-            </form>
-        {% endif %}
-    {% endif %}
-</div>
-<h1>{{ ideia.titulo }}</h1>
-<p class="ideia-meta"><strong>Autor:</strong> {{ ideia.autor.username }} | <strong>Data:</strong> {{ ideia.data_criacao|date:"d/m/Y H:i" }}</p>
-<div class="votacao">{% if user.is_authenticated %}<a href="{% url 'app:votar_ideia' ideia.id 'upvote' %}">▲ Upvote</a><span class="votacao-score">{{ ideia.pontuacao_total }}</span><a href="{% url 'app:votar_ideia' ideia.id 'downvote' %}">▼ Downvote</a>{% else %}<span class="votacao-score">Pontuação: {{ ideia.pontuacao_total }}</span><small>(Faça login para votar)</small>{% endif %}</div><hr>
-<p>{{ ideia.descricao|linebreaks }}</p>
-<div class="comentarios-secao">
-    <h3>Comentários</h3>
-    {% for comentario in comentarios %}<div class="comentario"><p>{{ comentario.conteudo }}</p><p class="comentario-meta">Por: <strong>{{ comentario.autor.username }}</strong> em {{ comentario.data_criacao|date:"d/m/Y" }}</p></div>{% empty %}<p>Ainda não há comentários para esta ideia.</p>{% endfor %}
-    <hr style="margin-top: 2em;">
-    {% if user.is_authenticated %}<h4>Deixe seu comentário</h4><form method="post">{% csrf_token %}{{ comment_form.as_p }}<button type="submit">Publicar Comentário</button></form>{% else %}<p><a href="{% url 'app:login' %}?next={{ request.path }}">Faça login</a> para deixar um comentário.</p>{% endif %}
-</div>
+<div class="bg-[#2F7E32] min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-4xl mx-auto">
+        <div class="bg-white rounded-2xl shadow-lg p-6 sm:p-8">
+            
+            <div class="mb-4">
+                <a href="{% url 'app:lista_ideias' %}" class="text-sm text-blue-600 hover:underline">&larr; Voltar para todas as ideias</a>
+            </div>
 
+            <div class="flex justify-between items-start"><div><h1 class="text-4xl font-bold text-gray-800">{{ ideia.titulo }}</h1><p class="text-sm text-gray-500 mt-2">por <strong>{{ ideia.autor.username }}</strong> em {{ ideia.data_criacao|date:"d/m/Y" }}</p></div><div class="text-right text-xs text-gray-500 flex-shrink-0 ml-4"><span>({{ ideia.total_reports }} denúncias)</span>{% if user.is_authenticated %}{% if user in ideia.usuarios_que_reportaram.all %}<span class="ml-1 text-red-500">(Você já denunciou)</span>{% else %}<form action="{% url 'app:reportar_ideia' ideia.id %}" method="post" class="inline">{% csrf_token %}<button type="submit" onclick="return confirm('Tem certeza?');" class="bg-transparent border-none text-red-600 hover:underline cursor-pointer ml-1">Reportar</button></form>{% endif %}{% endif %}</div></div>
+            <hr class="my-6">
+            <div class="flex items-center justify-center space-x-6 bg-gray-50 p-4 rounded-lg"><a href="{% url 'app:votar_ideia' ideia.id 'upvote' %}" class="px-6 py-2 rounded-full font-semibold text-green-700 bg-green-100 hover:bg-green-200 transition">▲ Upvote</a><span class="text-3xl font-bold text-gray-700">{{ ideia.pontuacao_total }}</span><a href="{% url 'app:votar_ideia' ideia.id 'downvote' %}" class="px-6 py-2 rounded-full font-semibold text-red-700 bg-red-100 hover:bg-red-200 transition">▼ Downvote</a></div>
+            <div class="mt-8 text-gray-700 leading-relaxed">{{ ideia.descricao|linebreaks }}</div>
+            <div class="mt-12">
+                <h2 class="text-2xl font-bold text-gray-800 border-b pb-2 mb-4">Comentários</h2>
+                <div class="space-y-6">{% for comentario in comentarios %}<div class="flex items-start space-x-4"><div class="w-10 h-10 bg-gray-200 rounded-full flex-shrink-0"></div><div><p class="font-semibold text-gray-800">{{ comentario.autor.username }} <span class="text-xs text-gray-500 font-normal">{{ comentario.data_criacao|date:"d M, Y" }}</span></p><p class="text-gray-600">{{ comentario.conteudo }}</p></div></div>{% empty %}<p class="text-gray-500">Ainda não há comentários para esta ideia.</p>{% endfor %}</div>
+                <div class="mt-8 pt-6 border-t">{% if user.is_authenticated %}<h3 class="text-xl font-semibold text-gray-800 mb-2">Deixe seu comentário</h3><form method="post">{% csrf_token %}{{ comment_form.conteudo }}<button type="submit" class="mt-4 bg-[#2F7E32] text-white font-bold py-2 px-6 rounded-full hover:bg-green-800 transition">Publicar Comentário</button></form>{% else %}<p class="text-center bg-gray-100 p-4 rounded-lg"><a href="{% url 'app:login' %}?next={{ request.path }}" class="font-semibold text-blue-600 hover:underline">Faça login</a> para deixar um comentário.</p>{% endif %}</div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

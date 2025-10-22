@@ -66,7 +66,12 @@ def submeter_ideia(request):
             nova_ideia.save()
             return redirect('app:detalhe_ideia', ideia_id=nova_ideia.id)
     else:
-        form = IdeiaForm()
+        problema_id_inicial = request.GET.get('problema')
+        initial_data = {}
+        if problema_id_inicial:
+            initial_data['problema_alvo'] = problema_id_inicial
+        form = IdeiaForm(initial=initial_data)
+        
     contexto = {
         'form': form
     }
@@ -102,11 +107,17 @@ def cadastro(request):
     contexto = {'form': form}
     return render(request, 'registration/cadastro.html', contexto)
 
-
 def lista_problemas(request):
-    problemas = Problema.objects.all().order_by('-id')
+    area_selecionada = request.GET.get('area')
+    problemas_list = Problema.objects.all()
+    if area_selecionada:
+        problemas_list = problemas_list.filter(area=area_selecionada)
+    problemas_list = problemas_list.order_by('-id')
+    areas_disponiveis = Problema.AREA_CHOICES
     contexto = {
-        'problemas': problemas,
+        'problemas': problemas_list,
+        'areas': areas_disponiveis,
+        'area_selecionada': area_selecionada,
     }
     return render(request, 'lista_problemas.html', contexto)
 
@@ -127,7 +138,17 @@ def relatar_problema(request):
 
 @login_required
 def dashboard(request):
-    return render(request, 'dashboard.html')
+    ideias_destaque = Ideia.objects.filter(status='aprovada').annotate(
+        pontuacao=Count('votos', filter=Q(votos__tipo='upvote')) - Count('votos', filter=Q(votos__tipo='downvote'))
+    ).order_by('-pontuacao')[:3]
+
+    problemas_carousel = Problema.objects.all().order_by('-id')[:5]
+
+    contexto = {
+        'ideias_destaque': ideias_destaque,
+        'problemas_carousel': problemas_carousel,
+    }
+    return render(request, 'dashboard.html', contexto)
 
 def detalhe_problema(request, problema_id):
     problema = get_object_or_404(Problema, pk=problema_id)

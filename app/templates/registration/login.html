@@ -1,26 +1,262 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Lócus</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: sans-serif; margin: 2em; background-color: #f4f4f4; }
-        .container { max-width: 400px; margin: auto; padding: 2em; border: 1px solid #ccc; border-radius: 5px; background-color: #fff; }
-        form p { display: flex; flex-direction: column; }
-        input { margin-top: 5px; padding: 8px; width: 100%; box-sizing: border-box; }
-        button { margin-top: 1em; padding: 10px; background-color: #0056b3; color: white; border: none; cursor: pointer; width: 100%; }
-        .errorlist { list-style-type: none; padding: 0; color: red; }
+        :root {
+            --dark-green-bg: #3A6B35; /* Fundo principal da página */
+            --mid-green-panel: #5B8C5A; /* Painel esquerdo (ainda não tem conta?) */
+            --white: #FFFFFF;
+            --light-gray-input: #F0F2F5; /* Cor de fundo dos inputs */
+            --text-dark: #333333; /* Texto principal do formulário */
+            --text-light-gray: #6c757d; /* Subtítulo e texto menor */
+            --border-radius-card: 20px;
+            --border-radius-input: 8px;
+            --button-border-radius: 30px;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--dark-green-bg);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden; /* Para garantir que a imagem de fundo não crie scroll */
+            position: relative;
+        }
+
+        body::before { /* Imagem da árvore no fundo */
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("{% static 'images/tree_background.png' %}"); /* Ajuste o nome do arquivo se for diferente */
+            background-repeat: no-repeat;
+            background-position: top right;
+            background-size: contain; /* Ajusta a imagem para caber na tela sem cortar */
+            opacity: 0.2; /* Um pouco transparente */
+            z-index: 0;
+        }
+
+        .auth-container {
+            display: flex;
+            width: 900px; /* Largura total do cartão */
+            height: 600px; /* Altura total do cartão */
+            background-color: var(--white);
+            border-radius: var(--border-radius-card);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+            position: relative; /* Para ficar acima da imagem de fundo */
+            z-index: 1;
+        }
+
+        .promo-panel { /* Painel esquerdo (verde) */
+            background-color: var(--mid-green-panel);
+            color: var(--white);
+            width: 45%;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        .promo-panel img { /* Logo no painel esquerdo */
+            width: 80px;
+            margin-bottom: 10px;
+        }
+        .promo-panel h2 {
+            font-size: 1.8em;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        .promo-panel p {
+            font-size: 0.9em;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+        .promo-panel .btn-outline { /* Botão "Cadastre-se" */
+            display: inline-block;
+            padding: 12px 40px;
+            border: 2px solid var(--white);
+            border-radius: var(--button-border-radius);
+            color: var(--white);
+            text-decoration: none;
+            font-weight: 600;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .promo-panel .btn-outline:hover {
+            background-color: var(--white);
+            color: var(--mid-green-panel);
+        }
+
+        .form-panel { /* Painel direito (formulário de login) */
+            width: 55%;
+            padding: 40px 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            text-align: center;
+        }
+        .form-panel h1 {
+            font-size: 2.2em;
+            color: var(--text-dark);
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        .form-panel .subtitle {
+            color: var(--text-light-gray);
+            margin-bottom: 30px;
+            font-size: 0.9em;
+        }
+
+        form p { /* Cada campo do formulário */
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 1.2em;
+            position: relative; /* Para o ícone */
+        }
+        form label { display: none; } /* Esconde o label padrão do Django */
+        form input {
+            background-color: var(--light-gray-input);
+            border: none;
+            border-radius: var(--border-radius-input);
+            padding: 15px 20px;
+            padding-left: 50px; /* Espaço para o ícone */
+            font-family: 'Poppins', sans-serif;
+            font-size: 1em;
+        }
+        form input::placeholder {
+            color: var(--text-light-gray);
+            opacity: 1;
+        }
+        form input:focus {
+            outline: 2px solid var(--mid-green-panel);
+            outline-offset: -2px;
+        }
+
+        .input-icon { /* Ícones dentro dos inputs */
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light-gray);
+            font-size: 1.2em;
+        }
+
+        .password-toggle { /* Olho para mostrar/esconder senha */
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: var(--text-light-gray);
+            font-size: 1.2em;
+        }
+
+        form button { /* Botão "Entrar" */
+            background-color: var(--mid-green-panel);
+            color: var(--white);
+            border: none;
+            border-radius: var(--button-border-radius);
+            padding: 15px;
+            font-weight: 600;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            width: 100%;
+            margin-top: 1em;
+        }
+        form button:hover {
+            background-color: var(--dark-green-bg);
+        }
+        .forgot-password-link {
+            font-size: 0.9em;
+            margin-top: 20px;
+            color: var(--text-light-gray);
+            text-decoration: none;
+            display: block; /* Para centralizar */
+        }
+        .forgot-password-link:hover {
+            text-decoration: underline;
+        }
+
+        ul.errorlist { list-style-type: none; padding: 0; color: red; font-size: 0.9em; margin-top: 5px; text-align: left;}
     </style>
 </head>
 <body>
-    <div class="container">
-        <h2>Login</h2>
-        <form method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit">Entrar</button>
-        </form>
-        <p>Não tem uma conta? <a href="{% url 'app:cadastro' %}">Cadastre-se</a></p>
+    <div class="auth-container">
+        
+        <div class="promo-panel">
+            <img src="{% static 'images/Locus.png' %}" alt="Logo Lócus" class="logo">
+            <h2>Ainda não tem uma conta?</h2>
+            <p>Faça o cadastro da sua conta abaixo!</p>
+            <a href="{% url 'app:cadastro' %}" class="btn-outline">CADASTRAR-SE</a>
+        </div>
+
+        <div class="form-panel">
+            <h1>Login</h1>
+            <p class="subtitle">Preencha seus dados para realizar o Login</p>
+
+            <form method="post">
+                {% csrf_token %} {% if form.non_field_errors %}<ul class="errorlist">{% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
+                
+                <p>
+                    <span class="input-icon">👤</span>
+                    {{ form.username }}
+                    {% if form.username.errors %}<ul class="errorlist">{% for error in form.username.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
+                </p>
+                <p style="margin-bottom: 0.5em;">
+                    <span class="input-icon">🔒</span>
+                    {{ form.password }}
+                    <span class="password-toggle" onclick="togglePasswordVisibility('id_password')">👁️</span>
+                    {% if form.password.errors %}<ul class="errorlist">{% for error in form.password.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
+                </p>
+                
+                <button type="submit">ENTRAR</button>
+            </form>
+            <a href="#" class="forgot-password-link">Esqueci minha senha.</a>
+        </div>
     </div>
+
+    <script>
+        // Script para alternar visibilidade da senha
+        function togglePasswordVisibility(passwordFieldId) {
+            const passwordField = document.getElementById(passwordFieldId);
+            const toggleButton = passwordField.nextElementSibling; // O elemento 'olho'
+            if (passwordField.type === "password") {
+                passwordField.type = "text";
+                toggleButton.textContent = "🙈"; // Altera para ícone de olho riscado
+            } else {
+                passwordField.type = "password";
+                toggleButton.textContent = "👁️"; // Altera para ícone de olho
+            }
+        }
+
+        // Adiciona placeholders e ids aos inputs do Django
+        document.addEventListener('DOMContentLoaded', function() {
+            const usernameInput = document.querySelector('input[name="username"]');
+            if (usernameInput) {
+                usernameInput.setAttribute('placeholder', 'Usuário');
+                usernameInput.setAttribute('id', 'id_username'); // Garante que tenha um ID
+            }
+            const passwordInput = document.querySelector('input[name="password"]');
+            if (passwordInput) {
+                passwordInput.setAttribute('placeholder', 'Senha');
+                passwordInput.setAttribute('id', 'id_password'); // Garante que tenha um ID
+            }
+        });
+    </script>
 </body>
 </html>

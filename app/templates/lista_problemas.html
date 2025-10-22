@@ -1,10 +1,89 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Problemas Relatados - Locus{% endblock %}
+{% block title %}Problemas em Aberto - Locus{% endblock %}
+
+{% block navbar %}
+    <nav class="bg-[#2F7E32] border-b border-white/20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <div class="flex items-center">
+                    <button id="mobile-menu-button" class="text-white text-2xl mr-4 p-2 rounded-md hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">☰</button>
+                    <div class="flex-shrink-0"><img class="h-10" src="{% static 'images/logo.jpg' %}" alt="Locus Logo"></div>
+                </div>
+                <div class="flex-grow mx-8">
+                    <div class="relative"><span class="absolute inset-y-0 left-0 flex items-center pl-3"><svg class="h-5 w-5 text-white/70" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" /></svg></span><input class="block w-full bg-white/20 border border-transparent rounded-full py-2 pl-10 pr-3 leading-5 text-white placeholder-white/70 focus:outline-none focus:bg-white/30 focus:ring-0 sm:text-sm" placeholder="Pesquisar..." type="search"></div>
+                </div>
+                <div class="flex items-center">
+                    <span class="text-white mr-4">Olá, {{ user.first_name|default:user.username }}!</span>
+                    <div class="w-12 h-12 bg-white/30 rounded-full"></div>
+                </div>
+                <div id="mobile-menu" class="hidden absolute top-16 left-0 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5">
+                    <a href="{% url 'app:lista_ideias' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Ideias</a>
+                    <a href="{% url 'app:lista_problemas' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Problemas</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+{% endblock %}
 
 {% block content %}
-<h1>Problemas Relatados pela Comunidade</h1>
-<p><a href="{% url 'app:relatar_problema' %}" style="font-weight: bold;">+ Relatar Novo Problema</a></p>
-<hr>
-{% for problema in problemas %}<div class="problema"><h3><a href="{% url 'app:detalhe_problema' problema.id %}">{{ problema.titulo }}</a></h3><small><b>Área:</b> {{ problema.get_area_display }} | <b>Localização:</b> {{ problema.localizacao }}</small><p>{{ problema.descricao }}</p></div>{% empty %}<p>Nenhum problema foi relatado ainda. Seja o primeiro!</p>{% endfor %}
+<div class="bg-[#2F7E32] text-white min-h-screen px-4 sm:px-6 lg:px-8 py-12">
+    <div class="max-w-7xl mx-auto">
+        <h1 class="text-5xl font-bold mb-4">Problemas em Aberto</h1>
+        <div class="flex items-center space-x-2 mb-10 overflow-x-auto pb-2">
+            <span class="text-lg mr-4 flex-shrink-0">Filtrar por área:</span>
+            <a href="{% url 'app:lista_problemas' %}" class="flex-shrink-0 px-6 py-2 rounded-full text-sm font-semibold border-2 {% if not area_selecionada %}bg-white text-[#2F7E32] border-white{% else %}border-white hover:bg-white hover:text-[#2F7E32] transition{% endif %}">Mostrar todas</a>
+            {% for value, display in areas %}
+            <a href="?area={{ value }}" class="flex-shrink-0 px-6 py-2 rounded-full text-sm font-semibold border-2 {% if area_selecionada == value %}bg-white text-[#2F7E32] border-white{% else %}border-white hover:bg-white hover:text-[#2F7E32] transition{% endif %}">{{ display }}</a>
+            {% endfor %}
+        </div>
+
+        <h2 class="text-3xl font-bold mb-8">Todos os Problemas</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {% for problema in problemas %}
+            <div class="bg-[#4C9A50] p-6 rounded-2xl shadow-lg border-2 border-green-400/50 flex flex-col justify-between">
+                <div>
+                    <div class="flex justify-between items-start mb-3">
+                        <h3 class="text-2xl font-bold">{{ problema.titulo }}</h3>
+                        
+                        <span class="bg-black/20 text-white font-bold text-xs py-1 px-3 rounded-full flex items-center gap-1">
+                            🚩 <span>{{ problema.total_reports }}</span>
+                        </span>
+                    </div>
+                    <p class="text-sm opacity-80 h-24 overflow-hidden mb-4">{{ problema.descricao|truncatewords:25 }}</p>
+                </div>
+                <div>
+                    <div class="text-xs mb-4">
+                        <div class="mb-2"><strong>Área do problema:</strong> {{ problema.get_area_display }}</div>
+                        <div><strong>Local do problema:</strong> {{ problema.localizacao }}</div>
+                    </div>
+                    <div class="flex justify-between items-center space-x-4">
+                        
+                        <a href="{% url 'app:detalhe_problema' problema.id %}" class="w-1/2 text-center border-2 border-white/80 font-semibold py-2 px-4 rounded-full text-sm hover:bg-white hover:text-[#4C9A50] transition">
+                            Detalhar
+                        </a>
+
+                        <a href="{% url 'app:submeter_ideia' %}?problema={{ problema.id }}" class="w-1/2 text-center bg-white text-[#4C9A50] font-bold py-2 px-4 rounded-full text-sm hover:bg-gray-200 transition">Propor Ideia</a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <p class="col-span-3 text-center text-lg">Nenhum problema encontrado para esta área.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<script>
+    // Script do Menu (igual ao do dashboard)
+    const menuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    menuButton.addEventListener('click', () => { mobileMenu.classList.toggle('hidden'); });
+    document.addEventListener('click', (event) => {
+        const isClickInsideMenu = mobileMenu.contains(event.target);
+        const isClickOnButton = menuButton.contains(event.target);
+        if (!isClickInsideMenu && !isClickOnButton) { mobileMenu.classList.add('hidden'); }
+    });
+</script>
 {% endblock %}

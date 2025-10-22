@@ -1,35 +1,34 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}{{ problema.titulo }} - Locus{% endblock %}
 
-{% block extra_css %}
-<style>
-    .problema-header { padding: 2em; margin-bottom: 2em; background-color: #fff; border-radius: 5px; border: 1px solid #ddd; }
-    .ideia { display: flex; justify-content: space-between; align-items: center; }
-    .ideia-score { font-weight: bold; font-size: 1.2em; color: #004085; }
-</style>
-{% endblock %}
-
 {% block content %}
-<p><a href="{% url 'app:lista_problemas' %}">&larr; Voltar para todos os problemas</a></p>
-<div style="text-align: right; font-size: 0.8em; color: #6c757d;">
-    <span>({{ problema.total_reports }} denúncias)</span>
-    {% if user.is_authenticated %}
-        {% if user in problema.usuarios_que_reportaram.all %}
-            <span style="margin-left: 5px;">(Você já denunciou)</span>
-        {% else %}
-            <form action="{% url 'app:reportar_problema' problema.id %}" method="post" style="display: inline;">
-                {% csrf_token %}
-                <button type="submit" onclick="return confirm('Tem certeza que deseja denunciar este problema como impróprio?');" style="background: none; border: none; color: #dc3545; text-decoration: underline; cursor: pointer; font-size: 1em; margin-left: 5px;">Reportar</button>
-            </form>
-        {% endif %}
-    {% endif %}
+<div class="bg-[#2F7E32] min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-4xl mx-auto">
+        
+        <div class="bg-white rounded-2xl shadow-lg p-6 sm:p-8">
+            
+            <div class="mb-4">
+                <a href="{% url 'app:lista_problemas' %}" class="text-sm text-blue-600 hover:underline">&larr; Voltar para todos os problemas</a>
+            </div>
+
+            <div class="flex justify-between items-start">
+                <div>
+                    <h1 class="text-4xl font-bold text-gray-800">{{ problema.titulo }}</h1>
+                    <p class="text-sm text-gray-500 mt-2"><strong>Área:</strong> {{ problema.get_area_display }} | <strong>Localização:</strong> {{ problema.localizacao }}</p>
+                </div>
+                <div class="text-right text-xs text-gray-500 flex-shrink-0 ml-4"><span>({{ problema.total_reports }} denúncias)</span>{% if user.is_authenticated %}{% if user in problema.usuarios_que_reportaram.all %}<span class="ml-1 text-red-500">(Você já denunciou)</span>{% else %}<form action="{% url 'app:reportar_problema' problema.id %}" method="post" class="inline">{% csrf_token %}<button type="submit" onclick="return confirm('Tem certeza?');" class="bg-transparent border-none text-red-600 hover:underline cursor-pointer ml-1">Reportar</button></form>{% endif %}{% endif %}</div>
+            </div>
+            <hr class="my-6">
+            <div class="mt-8 text-gray-700 leading-relaxed">{{ problema.descricao|linebreaks }}</div>
+            <div class="mt-12">
+                <h2 class="text-2xl font-bold text-gray-800 border-b pb-2 mb-6">Ideias de Solução (ordenadas por popularidade)</h2>
+                <div class="space-y-4">
+                    {% for ideia in ideias %}<a href="{% url 'app:detalhe_ideia' ideia.id %}" class="block p-4 rounded-lg bg-gray-50 hover:bg-gray-100 transition"><div class="flex justify-between items-center"><div><p class="font-semibold text-lg text-gray-800">{{ ideia.titulo }}</p><p class="text-xs text-gray-500">por {{ ideia.autor.username }}</p></div><div class="text-right flex-shrink-0 ml-4"><span class="font-bold text-xl text-blue-600">{{ ideia.pontuacao }}</span><p class="text-xs text-gray-500">Pontos</p></div></div></a>{% empty %}<div class="text-center bg-gray-100 p-6 rounded-lg"><p class="text-gray-600">Ainda não há ideias de solução para este problema.</p><a href="{% url 'app:submeter_ideia' %}?problema={{ problema.id }}" class="mt-4 inline-block bg-[#2F7E32] text-white font-bold py-2 px-6 rounded-full hover:bg-green-800 transition">Seja o primeiro a propor uma!</a></div>{% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-<div class="problema-header">
-    <h1>{{ problema.titulo }}</h1>
-    <p><b>Área:</b> {{ problema.get_area_display }} | <b>Localização:</b> {{ problema.localizacao }}</p>
-    <p>{{ problema.descricao|linebreaks }}</p>
-</div>
-<h3>Ideias de Solução (ordenadas por popularidade)</h3>
-{% for ideia in ideias %}<div class="ideia"><div><h4><a href="{% url 'app:detalhe_ideia' ideia.id %}">{{ ideia.titulo }}</a></h4><small>Enviada por: {{ ideia.autor.username }}</small></div><div class="ideia-score">{{ ideia.pontuacao }} Pontos</div></div>{% empty %}<p>Ainda não há ideias de solução para este problema. <a href="{% url 'app:submeter_ideia' %}">Seja o primeiro a propor uma!</a></p>{% endfor %}
 {% endblock %}

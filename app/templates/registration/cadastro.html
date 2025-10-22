@@ -1,27 +1,191 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Cadastro - Lócus</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crie sua Conta - Lócus</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: sans-serif; margin: 2em; background-color: #f4f4f4; }
-        .container { max-width: 400px; margin: auto; padding: 2em; border: 1px solid #ccc; border-radius: 5px; background-color: #fff; }
-        form p { display: flex; flex-direction: column; }
-        input, select { margin-top: 5px; padding: 8px; width: 100%; box-sizing: border-box; }
-        button { margin-top: 1em; padding: 10px; background-color: #0056b3; color: white; border: none; cursor: pointer; width: 100%; }
-        .helptext { font-size: 0.8em; color: gray; margin: 0; }
-        ul.errorlist { list-style-type: none; padding: 0; color: red; }
+        :root {
+            --dark-green-bg: #3A6B35;
+            --mid-green-button: #5B8C5A;
+            --white: #FFFFFF;
+            --light-gray-input: #F0F2F5;
+            --text-dark: #333333;
+            --text-light-gray: #6c757d;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--dark-green-bg);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        body::before { /* Imagem da árvore no fundo */
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("{% static 'images/tree_background.png' %}");
+            background-repeat: no-repeat;
+            background-position: top right;
+            background-size: contain;
+            opacity: 0.2;
+            z-index: 0;
+        }
+
+        .register-container {
+            width: 600px;
+            max-width: 90%;
+            background-color: var(--white);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            padding: 40px;
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .back-arrow {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            font-size: 1.8em;
+            color: var(--text-light-gray);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        h1 {
+            font-size: 2.2em;
+            color: var(--text-dark);
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .subtitle {
+            color: var(--text-light-gray);
+            margin-bottom: 30px;
+            font-size: 0.9em;
+        }
+
+        form p {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 1.2em;
+            position: relative;
+        }
+        form label { display: none; }
+        form input, form select {
+            background-color: var(--light-gray-input);
+            border: none;
+            border-radius: 8px;
+            padding: 15px 20px;
+            padding-left: 50px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1em;
+            box-sizing: border-box; /* Garante que o padding não aumente a largura */
+            width: 100%;
+        }
+        form input:focus, form select:focus {
+            outline: 2px solid var(--mid-green-button);
+            outline-offset: -2px;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light-gray);
+        }
+
+        button[type="submit"] {
+            background-color: var(--mid-green-button);
+            color: var(--white);
+            border: none;
+            border-radius: 30px;
+            padding: 15px;
+            font-weight: 600;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            width: 100%;
+            margin-top: 1em;
+        }
+        button[type="submit"]:hover {
+            background-color: var(--dark-green-bg);
+        }
+        
+        .suap-link {
+            font-size: 0.9em;
+            margin-top: 20px;
+            color: var(--text-light-gray);
+            text-decoration: none;
+            display: block;
+        }
+        .suap-link:hover {
+            text-decoration: underline;
+        }
+        ul.errorlist { list-style-type: none; padding: 0; color: red; font-size: 0.9em; margin-top: 5px; text-align: left;}
     </style>
 </head>
 <body>
-    <div class="container">
-        <h2>Cadastro de Novo Usuário</h2>
+    <div class="register-container">
+        <a href="{% url 'app:login' %}" class="back-arrow">&larr;</a>
+        
+        <h1>Crie sua conta</h1>
+        <p class="subtitle">Preencha seus dados para realizar o cadastro</p>
+        
         <form method="post">
             {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit">Cadastrar</button>
+            {% if form.non_field_errors %}<ul class="errorlist">{% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
+            
+            <p>
+                <span class="input-icon">👤</span>
+                {{ form.first_name }}
+                {% if form.first_name.errors %}<ul class="errorlist">{% for error in form.first_name.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
+            </p>
+            <p>
+                <span class="input-icon">@</span>
+                {{ form.username }}
+                {% if form.username.errors %}<ul class="errorlist">{% for error in form.username.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
+            </p>
+            <p>
+                <span class="input-icon">📧</span>
+                {{ form.email }}
+                {% if form.email.errors %}<ul class="errorlist">{% for error in form.email.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
+            </p>
+            <p>
+                <span class="input-icon">🔒</span>
+                {{ form.password1 }}
+                {% if form.password1.errors %}<ul class="errorlist">{% for error in form.password1.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
+            </p>
+            <p>
+                <span class="input-icon">🔒</span>
+                {{ form.password2 }}
+                {% if form.password2.errors %}<ul class="errorlist">{% for error in form.password2.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
+            </p>
+            
+            {{ form.tipo.as_hidden }}
+            {{ form.curso_departamento.as_hidden }}
+
+            <button type="submit">CADASTRAR-SE</button>
         </form>
-        <p><a href="{% url 'app:login' %}">Já tem uma conta? Faça login</a></p>
+        
+        <a href="#" class="suap-link">Entrar pelo SUAP</a>
     </div>
 </body>
 </html>

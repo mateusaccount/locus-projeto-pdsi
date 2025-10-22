@@ -1,34 +1,84 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Página Inicial - Locus{% endblock %}
-
-{% block extra_css %}
-<style>
-    .destaques { background-color: #e7f3ff; border: 1px solid #b3d7ff; border-radius: 5px; padding: 1em; margin-bottom: 2em; }
-    .destaques h2 { margin-top: 0; color: #004085; }
-    .destaque-ideia { display: flex; justify-content: space-between; align-items: center; padding: 0.5em 0; border-bottom: 1px solid #b3d7ff; }
-    .destaque-ideia:last-child { border-bottom: none; }
-    .destaque-score { font-weight: bold; font-size: 1.2em; color: #004085; }
-    .filtros { margin-bottom: 1.5em; padding: 1em; background-color: #fff; border-radius: 5px; }
-    .filtros a { display: inline-block; padding: 6px 12px; margin: 0 5px 5px 0; border: 1px solid #ccc; border-radius: 15px; background-color: #f0f0f0; font-size: 0.9em; }
-    .filtros a.ativo, .filtros a:hover { background-color: #0056b3; color: white; border-color: #0056b3; }
-</style>
-{% endblock %}
+{% block title %}Todas as Ideias - Locus{% endblock %}
 
 {% block content %}
-<div class="destaques">
-    <h2>🏆 Ideias em Destaque</h2>
-    {% for ideia in ideias_destaque %}<div class="destaque-ideia"><div><a href="{% url 'app:detalhe_ideia' ideia.id %}">{{ ideia.titulo }}</a><div class="ideia-meta" style="font-size: 0.9em; color: #555;">por {{ ideia.autor.username }}</div></div><div class="destaque-score">{{ ideia.pontuacao }} Pontos</div></div>{% empty %}<p>Ainda não há ideias com votos para destacar.</p>{% endfor %}
+<div class="bg-[#2F7E32] text-white min-h-screen px-4 sm:px-6 lg:px-8 py-12">
+    <div class="max-w-7xl mx-auto">
+
+        <h1 class="text-4xl font-bold mb-8">Ideias em Destaque</h1>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+            {% for ideia in ideias_destaque %}
+            <div class="bg-[#4C9A50] p-6 rounded-2xl shadow-lg border-2 border-green-400/50 flex flex-col justify-between">
+                <div>
+                    <div class="flex justify-between items-start mb-2">
+                        <h4 class="text-xl font-bold">{{ ideia.titulo }}</h4>
+                        <span class="bg-black/20 text-white font-bold text-xs py-1 px-3 rounded-full flex items-center gap-1">
+                            ☐ <span>{{ ideia.pontuacao }}</span>
+                        </span>
+                    </div>
+                    <p class="text-xs opacity-80 mb-4">Problema: {{ ideia.problema_alvo.titulo|default:"Não especificado" }}</p>
+                    <p class="text-sm opacity-90 h-20 overflow-hidden mb-6">{{ ideia.descricao|truncatewords:20 }}</p>
+                </div>
+                <div class="flex justify-between space-x-4">
+                    <a href="{% url 'app:detalhe_ideia' ideia.id %}" class="w-full text-center bg-white text-[#4C9A50] font-bold py-2 px-4 rounded-full text-sm hover:bg-gray-200 transition">
+                        Ver Detalhes e Votar
+                    </a>
+                </div>
+            </div>
+            {% empty %}
+            <p class="col-span-3">Nenhuma ideia em destaque no momento.</p>
+            {% endfor %}
+        </div>
+
+        {% if user.is_authenticated %}
+            <div class="text-center mb-10">
+                <a href="{% url 'app:submeter_ideia' %}" class="bg-white text-[#2F7E32] font-bold py-3 px-8 rounded-full text-lg hover:bg-gray-200 transition">
+                    + Submeter Nova Ideia
+                </a>
+            </div>
+        {% endif %}
+
+        <div class="flex items-center space-x-2 mb-10 overflow-x-auto pb-2">
+            <span class="text-lg mr-4 flex-shrink-0">Filtrar por área:</span>
+            <a href="{% url 'app:lista_ideias' %}" class="flex-shrink-0 px-6 py-2 rounded-full text-sm font-semibold border-2 {% if not area_selecionada %}bg-white text-[#2F7E32] border-white{% else %}border-white hover:bg-white hover:text-[#2F7E32] transition{% endif %}">Mostrar todas</a>
+            {% for value, display in areas %}
+            <a href="?area={{ value }}" class="flex-shrink-0 px-6 py-2 rounded-full text-sm font-semibold border-2 {% if area_selecionada == value %}bg-white text-[#2F7E32] border-white{% else %}border-white hover:bg-white hover:text-[#2F7E32] transition{% endif %}">{{ display }}</a>
+            {% endfor %}
+        </div>
+
+        <h2 class="text-3xl font-bold mb-8">Todas as Ideias</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {% for ideia in ideias %}
+            <div class="bg-[#4C9A50] p-6 rounded-2xl shadow-lg border-2 border-green-400/50 flex flex-col justify-between">
+                <div>
+                    <div class="flex justify-between items-start mb-3">
+                        <h3 class="text-2xl font-bold">{{ ideia.titulo }}</h3>
+                        <span class="bg-black/20 text-white font-bold text-xs py-1 px-3 rounded-full flex items-center gap-1">
+                            ☐ <span>{{ ideia.pontuacao_total }}</span>
+                        </span>
+                    </div>
+                    <p class="text-sm opacity-80 h-24 overflow-hidden mb-4">{{ ideia.descricao|truncatewords:25 }}</p>
+                </div>
+                <div>
+                    <div class="text-xs mb-4 opacity-80">
+                        <p>Autor: {{ ideia.autor.username }}</p>
+                        {% if ideia.problema_alvo %}
+                            <p>Problema: <a href="{% url 'app:detalhe_problema' ideia.problema_alvo.id %}" class="underline hover:text-white">{{ ideia.problema_alvo.titulo }}</a></p>
+                        {% endif %}
+                    </div>
+                    <div class="flex justify-between items-center space-x-4">
+                        <a href="{% url 'app:detalhe_ideia' ideia.id %}" class="w-full text-center bg-white text-[#4C9A50] font-bold py-2 px-4 rounded-full text-sm hover:bg-gray-200 transition">
+                            Ver Detalhes e Votar
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <p class="col-span-3 text-center text-lg">Nenhuma ideia encontrada para esta área.</p>
+            {% endfor %}
+        </div>
+    </div>
 </div>
-
-{% if user.is_authenticated %}<p><a href="{% url 'app:submeter_ideia' %}" style="font-weight: bold;">+ Submeter Nova Ideia</a></p>{% endif %}
-
-<div class="filtros">
-    <strong>Filtrar por área:</strong><br>
-    <a href="{% url 'app:lista_ideias' %}" class="{% if not area_selecionada %}ativo{% endif %}">Mostrar Todas</a>
-    {% for value, display in areas %}<a href="?area={{ value }}" class="{% if area_selecionada == value %}ativo{% endif %}">{{ display }}</a>{% endfor %}
-</div>
-
-<h3>Todas as Ideias</h3>
-{% for ideia in ideias %}<div class="ideia"><h2><a href="{% url 'app:detalhe_ideia' ideia.id %}">{{ ideia.titulo }}</a></h2><p class="ideia-meta" style="font-size: 0.9em; color: #555;"><strong>Autor:</strong> {{ ideia.autor.username }} | <strong>Data:</strong> {{ ideia.data_criacao|date:"d/m/Y" }}{% if ideia.problema_alvo %}<br><strong>Problema:</strong> <a href="{% url 'app:detalhe_problema' ideia.problema_alvo.id %}">{{ ideia.problema_alvo.titulo }}</a>{% endif %}</p><p>{{ ideia.descricao|truncatewords:30 }}</p></div>{% empty %}<p>Nenhuma ideia encontrada para o filtro selecionado.</p>{% endfor %}
 {% endblock %}
