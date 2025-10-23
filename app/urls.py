@@ -32,5 +32,7 @@ urlpatterns = [
     
     # --- ROTA DE REPORT DE PROBLEMA ---
     path('problemas/<int:problema_id>/reportar/', views.reportar_problema, name='reportar_problema'),
-
+    path('perfil/', views.perfil_usuario, name='perfil'),
+    path('pesquisa/', views.pesquisa, name='pesquisa'),
+    path('api/pesquisa/', views.api_pesquisa, name='api_pesquisa'),
 ]

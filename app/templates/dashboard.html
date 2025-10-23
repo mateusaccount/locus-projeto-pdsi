@@ -36,7 +36,6 @@
 </div>
 
 <script>
-    // Script específico do Carrossel
     const slides = document.querySelectorAll('.problem-slide');
     const prevBtn = document.getElementById('prev-btn');
     const nextBtn = document.getElementById('next-btn');
@@ -45,7 +44,6 @@
     function showSlide(index) {
         if (!slides.length) return;
         slides.forEach((slide, i) => { if (i === index) { slide.classList.remove('opacity-0'); } else { slide.classList.add('opacity-0'); } });
-        // Garante que o primeiro slide seja visível ao carregar
         if(slides.length > 0) {
             const firstSlide = document.querySelector('.problem-slide[data-index="0"]');
             if(firstSlide && document.querySelectorAll('.problem-slide.opacity-0').length === slides.length) {

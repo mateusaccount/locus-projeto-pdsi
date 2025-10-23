@@ -7,6 +7,7 @@ from django.db.models import Count, Q
 from .models import Ideia, Comentario, Votacao, Problema
 from .forms import IdeiaForm, CustomUserCreationForm, ProblemaForm, ComentarioForm
 from django.contrib import messages
+from django.http import JsonResponse
 
 
 def lista_ideias(request):
@@ -126,7 +127,9 @@ def relatar_problema(request):
     if request.method == 'POST':
         form = ProblemaForm(request.POST)
         if form.is_valid():
-            form.save()
+            novo_problema = form.save(commit=False)
+            novo_problema.autor = request.user
+            novo_problema.save()
             return redirect('app:lista_problemas')
     else:
         form = ProblemaForm()
@@ -179,3 +182,63 @@ def reportar_problema(request, problema_id):
         messages.success(request, 'Denúncia recebida. Agradecemos sua colaboração!')
         return redirect('app:detalhe_problema', problema_id=problema.id)
     return redirect('app:detalhe_problema', problema_id=problema.id)
+
+@login_required
+def perfil_usuario(request):
+    ideias_do_usuario = Ideia.objects.filter(autor=request.user).order_by('-data_criacao')
+    problemas_do_usuario = Problema.objects.filter(autor=request.user).order_by('-id')
+    contexto = {
+        'ideias_list': ideias_do_usuario,
+        'problemas_list': problemas_do_usuario,
+    }
+    return render(request, 'perfil.html', contexto)
+
+def pesquisa(request):
+    query = request.GET.get('q', '')
+    resultados = []
+    if query:
+        ideias = Ideia.objects.filter(
+            Q(titulo__icontains=query) | Q(descricao__icontains=query)
+        ).filter(status='aprovada')
+        problemas = Problema.objects.filter(
+            Q(titulo__icontains=query) | Q(descricao__icontains=query)
+        )
+        for item in ideias:
+            resultados.append({'item': item, 'tipo': 'Ideia'})
+        
+        for item in problemas:
+            resultados.append({'item': item, 'tipo': 'Problema'})
+
+    contexto = {
+        'query': query,
+        'resultados': resultados,
+    }
+    return render(request, 'pesquisa.html', contexto)
+
+def api_pesquisa(request):
+    query = request.GET.get('q', '')
+    resultados_finais = []
+
+    if query:
+        ideias = Ideia.objects.filter(
+            Q(titulo__icontains=query) | Q(descricao__icontains=query),
+            status='aprovada'
+        )[:5]
+        problemas = Problema.objects.filter(
+            Q(titulo__icontains=query) | Q(descricao__icontains=query)
+        )[:5]
+        for ideia in ideias:
+            resultados_finais.append({
+                'titulo': ideia.titulo,
+                'tipo': 'Ideia',
+                'url': f'/ideia/{ideia.id}/'
+            })
+        
+        for problema in problemas:
+            resultados_finais.append({
+                'titulo': problema.titulo,
+                'tipo': 'Problema',
+                'url': f'/problemas/{problema.id}/'
+            })
+            
+    return JsonResponse(resultados_finais, safe=False)

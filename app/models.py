@@ -27,11 +27,13 @@ class Problema(models.Model):
     descricao = models.TextField()
     area = models.CharField(max_length=50, choices=AREA_CHOICES)
     localizacao = models.CharField(max_length=255, help_text="Ex: Bairro, Cidade, Campus")
+    autor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
     usuarios_que_reportaram = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
         related_name='problemas_reportados',
         blank=True
     )
+    data_criacao = models.DateTimeField(auto_now_add=True)
     
     @property
     def total_reports(self):

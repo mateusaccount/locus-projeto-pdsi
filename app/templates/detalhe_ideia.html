@@ -6,21 +6,33 @@
 {% block content %}
 <div class="bg-[#2F7E32] min-h-screen py-12 px-4 sm:px-6 lg:px-8">
     <div class="max-w-4xl mx-auto">
-        <div class="bg-white rounded-2xl shadow-lg p-6 sm:p-8">
+        
+        <div class="bg-[#4C9A50] rounded-2xl shadow-lg p-6 sm:p-8 text-white">
             
             <div class="mb-4">
-                <a href="{% url 'app:lista_ideias' %}" class="text-sm text-blue-600 hover:underline">&larr; Voltar para todas as ideias</a>
+                {% if request.GET.from_problem %}
+                    <a href="{% url 'app:detalhe_problema' request.GET.from_problem %}" class="text-sm text-white/80 hover:text-white hover:underline">&larr; Voltar para o Problema</a>
+                {% else %}
+                    <a href="{% url 'app:lista_ideias' %}" class="text-sm text-white/80 hover:text-white hover:underline">&larr; Voltar para todas as ideias</a>
+                {% endif %}
             </div>
 
-            <div class="flex justify-between items-start"><div><h1 class="text-4xl font-bold text-gray-800">{{ ideia.titulo }}</h1><p class="text-sm text-gray-500 mt-2">por <strong>{{ ideia.autor.username }}</strong> em {{ ideia.data_criacao|date:"d/m/Y" }}</p></div><div class="text-right text-xs text-gray-500 flex-shrink-0 ml-4"><span>({{ ideia.total_reports }} denúncias)</span>{% if user.is_authenticated %}{% if user in ideia.usuarios_que_reportaram.all %}<span class="ml-1 text-red-500">(Você já denunciou)</span>{% else %}<form action="{% url 'app:reportar_ideia' ideia.id %}" method="post" class="inline">{% csrf_token %}<button type="submit" onclick="return confirm('Tem certeza?');" class="bg-transparent border-none text-red-600 hover:underline cursor-pointer ml-1">Reportar</button></form>{% endif %}{% endif %}</div></div>
-            <hr class="my-6">
-            <div class="flex items-center justify-center space-x-6 bg-gray-50 p-4 rounded-lg"><a href="{% url 'app:votar_ideia' ideia.id 'upvote' %}" class="px-6 py-2 rounded-full font-semibold text-green-700 bg-green-100 hover:bg-green-200 transition">▲ Upvote</a><span class="text-3xl font-bold text-gray-700">{{ ideia.pontuacao_total }}</span><a href="{% url 'app:votar_ideia' ideia.id 'downvote' %}" class="px-6 py-2 rounded-full font-semibold text-red-700 bg-red-100 hover:bg-red-200 transition">▼ Downvote</a></div>
-            <div class="mt-8 text-gray-700 leading-relaxed">{{ ideia.descricao|linebreaks }}</div>
-            <div class="mt-12">
-                <h2 class="text-2xl font-bold text-gray-800 border-b pb-2 mb-4">Comentários</h2>
-                <div class="space-y-6">{% for comentario in comentarios %}<div class="flex items-start space-x-4"><div class="w-10 h-10 bg-gray-200 rounded-full flex-shrink-0"></div><div><p class="font-semibold text-gray-800">{{ comentario.autor.username }} <span class="text-xs text-gray-500 font-normal">{{ comentario.data_criacao|date:"d M, Y" }}</span></p><p class="text-gray-600">{{ comentario.conteudo }}</p></div></div>{% empty %}<p class="text-gray-500">Ainda não há comentários para esta ideia.</p>{% endfor %}</div>
-                <div class="mt-8 pt-6 border-t">{% if user.is_authenticated %}<h3 class="text-xl font-semibold text-gray-800 mb-2">Deixe seu comentário</h3><form method="post">{% csrf_token %}{{ comment_form.conteudo }}<button type="submit" class="mt-4 bg-[#2F7E32] text-white font-bold py-2 px-6 rounded-full hover:bg-green-800 transition">Publicar Comentário</button></form>{% else %}<p class="text-center bg-gray-100 p-4 rounded-lg"><a href="{% url 'app:login' %}?next={{ request.path }}" class="font-semibold text-blue-600 hover:underline">Faça login</a> para deixar um comentário.</p>{% endif %}</div>
+            <div class="flex justify-between items-start">
+                <div>
+                    <h1 class="text-4xl font-bold">{{ ideia.titulo }}</h1>
+                    <p class="text-sm text-white/80 mt-2">por <strong>{{ ideia.autor.username }}</strong> em {{ ideia.data_criacao|date:"d/m/Y" }}</p>
+                </div>
+                <div class="text-right text-xs text-white/70 flex-shrink-0 ml-4"><span>({{ ideia.total_reports }} denúncias)</span>{% if user.is_authenticated %}{% if user in ideia.usuarios_que_reportaram.all %}<span class="ml-1 text-red-300">(Você já denunciou)</span>{% else %}<form action="{% url 'app:reportar_ideia' ideia.id %}" method="post" class="inline">{% csrf_token %}<button type="submit" onclick="return confirm('Tem certeza?');" class="bg-transparent border-none text-red-400 hover:underline cursor-pointer ml-1">Reportar</button></form>{% endif %}{% endif %}</div>
             </div>
+            <hr class="my-6 border-white/30">
+            <div class="flex items-center justify-center space-x-6 bg-white/10 p-4 rounded-lg"><a href="{% url 'app:votar_ideia' ideia.id 'upvote' %}" class="px-6 py-2 rounded-full font-semibold text-white bg-green-500 hover:bg-green-600 transition">▲ Upvote</a><span class="text-3xl font-bold">{{ ideia.pontuacao_total }}</span><a href="{% url 'app:votar_ideia' ideia.id 'downvote' %}" class="px-6 py-2 rounded-full font-semibold text-white bg-red-500 hover:bg-red-600 transition">▼ Downvote</a></div>
+            <div class="mt-8 text-white/90 leading-relaxed">{{ ideia.descricao|linebreaks }}</div>
+            <div class="mt-12">
+                <h2 class="text-2xl font-bold border-b border-white/30 pb-2 mb-4">Comentários</h2>
+                <div class="space-y-6">{% for comentario in comentarios %}<div class="flex items-start space-x-4 bg-white/5 p-4 rounded-lg"><div class="w-10 h-10 bg-white/20 rounded-full flex-shrink-0"></div><div><p class="font-semibold">{{ comentario.autor.username }} <span class="text-xs text-white/70 font-normal">{{ comentario.data_criacao|date:"d M, Y" }}</span></p><p class="text-white/90 mt-1">{{ comentario.conteudo }}</p></div></div>{% empty %}<p class="text-white/70">Ainda não há comentários para esta ideia.</p>{% endfor %}</div>
+                <div class="mt-8 pt-6 border-t border-white/30">{% if user.is_authenticated %}<h3 class="text-xl font-semibold mb-2">Deixe seu comentário</h3><form method="post">{% csrf_token %}{{ comment_form.conteudo }}<button type="submit" class="mt-4 bg-white text-[#2F7E32] font-bold py-2 px-6 rounded-full hover:bg-gray-200 transition">Publicar Comentário</button></form>{% else %}<p class="text-center bg-white/10 p-4 rounded-lg"><a href="{% url 'app:login' %}?next={{ request.path }}" class="font-semibold text-white hover:underline">Faça login</a> para deixar um comentário.</p>{% endif %}</div>
+            </div>
+
         </div>
     </div>
 </div>

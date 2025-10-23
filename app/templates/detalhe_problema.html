@@ -7,25 +7,64 @@
 <div class="bg-[#2F7E32] min-h-screen py-12 px-4 sm:px-6 lg:px-8">
     <div class="max-w-4xl mx-auto">
         
-        <div class="bg-white rounded-2xl shadow-lg p-6 sm:p-8">
+        <div class="bg-[#4C9A50] rounded-2xl shadow-lg p-6 sm:p-8 text-white">
             
             <div class="mb-4">
-                <a href="{% url 'app:lista_problemas' %}" class="text-sm text-blue-600 hover:underline">&larr; Voltar para todos os problemas</a>
+                <a href="{% url 'app:lista_problemas' %}" class="text-sm text-white/80 hover:text-white hover:underline">&larr; Voltar para todos os problemas</a>
             </div>
 
             <div class="flex justify-between items-start">
                 <div>
-                    <h1 class="text-4xl font-bold text-gray-800">{{ problema.titulo }}</h1>
-                    <p class="text-sm text-gray-500 mt-2"><strong>Área:</strong> {{ problema.get_area_display }} | <strong>Localização:</strong> {{ problema.localizacao }}</p>
+                    <h1 class="text-4xl font-bold">{{ problema.titulo }}</h1>
+                    <p class="text-sm text-white/80 mt-2">
+                        <strong>Área:</strong> {{ problema.get_area_display }} | <strong>Localização:</strong> {{ problema.localizacao }}
+                    </p>
                 </div>
-                <div class="text-right text-xs text-gray-500 flex-shrink-0 ml-4"><span>({{ problema.total_reports }} denúncias)</span>{% if user.is_authenticated %}{% if user in problema.usuarios_que_reportaram.all %}<span class="ml-1 text-red-500">(Você já denunciou)</span>{% else %}<form action="{% url 'app:reportar_problema' problema.id %}" method="post" class="inline">{% csrf_token %}<button type="submit" onclick="return confirm('Tem certeza?');" class="bg-transparent border-none text-red-600 hover:underline cursor-pointer ml-1">Reportar</button></form>{% endif %}{% endif %}</div>
+                <div class="text-right text-xs text-white/70 flex-shrink-0 ml-4">
+                    <span>({{ problema.total_reports }} denúncias)</span>
+                    {% if user.is_authenticated %}
+                        {% if user in problema.usuarios_que_reportaram.all %}
+                            <span class="ml-1 text-red-300">(Você já denunciou)</span>
+                        {% else %}
+                            <form action="{% url 'app:reportar_problema' problema.id %}" method="post" class="inline">
+                                {% csrf_token %}
+                                <button type="submit" onclick="return confirm('Tem certeza que deseja denunciar este problema como impróprio?');" class="bg-transparent border-none text-red-400 hover:underline cursor-pointer ml-1">Reportar</button>
+                            </form>
+                        {% endif %}
+                    {% endif %}
+                </div>
             </div>
-            <hr class="my-6">
-            <div class="mt-8 text-gray-700 leading-relaxed">{{ problema.descricao|linebreaks }}</div>
+
+            <hr class="my-6 border-white/30">
+
+            <div class="mt-8 text-white/90 leading-relaxed">
+                {{ problema.descricao|linebreaks }}
+            </div>
+
             <div class="mt-12">
-                <h2 class="text-2xl font-bold text-gray-800 border-b pb-2 mb-6">Ideias de Solução (ordenadas por popularidade)</h2>
+                <h2 class="text-2xl font-bold border-b border-white/30 pb-2 mb-6">Ideias de Solução (ordenadas por popularidade)</h2>
                 <div class="space-y-4">
-                    {% for ideia in ideias %}<a href="{% url 'app:detalhe_ideia' ideia.id %}" class="block p-4 rounded-lg bg-gray-50 hover:bg-gray-100 transition"><div class="flex justify-between items-center"><div><p class="font-semibold text-lg text-gray-800">{{ ideia.titulo }}</p><p class="text-xs text-gray-500">por {{ ideia.autor.username }}</p></div><div class="text-right flex-shrink-0 ml-4"><span class="font-bold text-xl text-blue-600">{{ ideia.pontuacao }}</span><p class="text-xs text-gray-500">Pontos</p></div></div></a>{% empty %}<div class="text-center bg-gray-100 p-6 rounded-lg"><p class="text-gray-600">Ainda não há ideias de solução para este problema.</p><a href="{% url 'app:submeter_ideia' %}?problema={{ problema.id }}" class="mt-4 inline-block bg-[#2F7E32] text-white font-bold py-2 px-6 rounded-full hover:bg-green-800 transition">Seja o primeiro a propor uma!</a></div>{% endfor %}
+                    {% for ideia in ideias %}
+                    <a href="{% url 'app:detalhe_ideia' ideia.id %}?from_problem={{ problema.id }}" class="block p-4 rounded-lg bg-white/10 hover:bg-white/20 transition">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <p class="font-semibold text-lg">{{ ideia.titulo }}</p>
+                                <p class="text-xs text-white/70">por {{ ideia.autor.username }}</p>
+                            </div>
+                            <div class="text-right flex-shrink-0 ml-4">
+                                <span class="font-bold text-xl text-white">{{ ideia.pontuacao }}</span>
+                                <p class="text-xs text-white/70">Pontos</p>
+                            </div>
+                        </div>
+                    </a>
+                    {% empty %}
+                    <div class="text-center bg-white/10 p-6 rounded-lg">
+                        <p class="text-white/80">Ainda não há ideias de solução para este problema.</p>
+                        <a href="{% url 'app:submeter_ideia' %}?problema={{ problema.id }}" class="mt-4 inline-block bg-white text-[#2F7E32] font-bold py-2 px-6 rounded-full hover:bg-gray-200 transition">
+                            Seja o primeiro a propor uma!
+                        </a>
+                    </div>
+                    {% endfor %}
                 </div>
             </div>
         </div>

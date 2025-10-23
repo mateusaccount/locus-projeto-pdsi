@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Resultados para "{{ query }}"{% endblock %}
+
+{% block content %}
+<div class="bg-[#2F7E32] text-white min-h-screen px-4 sm:px-6 lg:px-8 py-12">
+    <div class="max-w-4xl mx-auto">
+        
+        {% if query %}
+            <h1 class="text-4xl font-bold mb-8">Resultados para "<span class="text-green-300">{{ query }}</span>"</h1>
+        {% else %}
+            <h1 class="text-4xl font-bold mb-8">Digite algo para pesquisar</h1>
+        {% endif %}
+
+        <div class="space-y-4">
+            {% for resultado in resultados %}
+            <div class="bg-[#4C9A50] p-4 rounded-lg flex justify-between items-center hover:bg-green-500/50 transition">
+                <a href="{% if resultado.tipo == 'Ideia' %}{% url 'app:detalhe_ideia' resultado.item.id %}{% else %}{% url 'app:detalhe_problema' resultado.item.id %}{% endif %}" class="flex-grow">
+                    <p class="font-semibold text-lg">{{ resultado.item.titulo }}</p>
+                    <p class="text-xs text-white/70 opacity-80">{{ resultado.item.descricao|truncatewords:15 }}</p>
+                </a>
+                <span class="ml-4 flex-shrink-0 text-xs font-bold uppercase py-1 px-3 rounded-full {% if resultado.tipo == 'Ideia' %}bg-blue-500/80{% else %}bg-yellow-500/80{% endif %}">
+                    {{ resultado.tipo }}
+                </span>
+            </div>
+            {% empty %}
+                {% if query %}
+                <p class="text-white/80">Nenhum resultado encontrado.</p>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

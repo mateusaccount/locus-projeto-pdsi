@@ -1,13 +1,41 @@
 {% extends 'base.html' %}
-{% block title %}Submeter Nova Ideia - Locus{% endblock %}
+{% load static %}
+
+{% block title %}Propor uma Nova Ideia - Locus{% endblock %}
+
+{% block extra_css %}
+    <style>
+        select option {
+            color: black;
+        }
+    </style>
+{% endblock %}
+
 {% block content %}
-    <p><a href="{% url 'app:lista_ideias' %}">&larr; Voltar para todas as ideias</a></p>
-    <h1>Submeter Nova Ideia</h1>
-    <p>Preencha o formulário abaixo para compartilhar sua ideia com a comunidade.</p>
-    <hr>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Enviar Ideia</button>
-    </form>
+<div class="bg-[#2F7E32] text-white min-h-screen px-4 sm:px-6 lg:px-8 py-12">
+    <div class="max-w-3xl mx-auto">
+        <div class="mb-4">
+            <a href="{{ request.META.HTTP_REFERER|default:'/' }}" class="text-sm text-white/80 hover:text-white hover:underline">&larr; Voltar</a>
+        </div>
+        
+        <h1 class="text-5xl font-bold">Propor uma Nova Ideia</h1>
+        <p class="text-lg opacity-80 mt-2 mb-10">Qual solução você propõe para um problema da comunidade?</p>
+        
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="space-y-6">
+                {{ form.titulo }}
+                {{ form.descricao }}
+                {{ form.problema_alvo }}
+            </div>
+
+            <div class="mt-8 text-center">
+                <button type="submit" class="border-2 border-white font-bold py-3 px-12 rounded-full text-lg hover:bg-white hover:text-[#2F7E32] transition">
+                    Publicar Ideia
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
 {% endblock %}

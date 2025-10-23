@@ -10,12 +10,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --dark-green-bg: #3A6B35; /* Fundo principal da página */
-            --mid-green-panel: #5B8C5A; /* Painel esquerdo (ainda não tem conta?) */
+            --dark-green-bg: #3A6B35;
+            --mid-green-panel: #5B8C5A;
             --white: #FFFFFF;
-            --light-gray-input: #F0F2F5; /* Cor de fundo dos inputs */
-            --text-dark: #333333; /* Texto principal do formulário */
-            --text-light-gray: #6c757d; /* Subtítulo e texto menor */
+            --light-gray-input: #F0F2F5;
+            --text-dark: #333333; 
+            --text-light-gray: #6c757d; 
             --border-radius-card: 20px;
             --border-radius-input: 8px;
             --button-border-radius: 30px;
@@ -29,38 +29,38 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            overflow: hidden; /* Para garantir que a imagem de fundo não crie scroll */
+            overflow: hidden; 
             position: relative;
         }
 
-        body::before { /* Imagem da árvore no fundo */
+        body::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-image: url("{% static 'images/tree_background.png' %}"); /* Ajuste o nome do arquivo se for diferente */
+            background-image: url("{% static 'images/tree_background.png' %}");
             background-repeat: no-repeat;
             background-position: top right;
-            background-size: contain; /* Ajusta a imagem para caber na tela sem cortar */
-            opacity: 0.2; /* Um pouco transparente */
+            background-size: contain;
+            opacity: 0.2; 
             z-index: 0;
         }
 
         .auth-container {
             display: flex;
-            width: 900px; /* Largura total do cartão */
-            height: 600px; /* Altura total do cartão */
+            width: 900px;
+            height: 600px; 
             background-color: var(--white);
             border-radius: var(--border-radius-card);
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             overflow: hidden;
-            position: relative; /* Para ficar acima da imagem de fundo */
+            position: relative; 
             z-index: 1;
         }
 
-        .promo-panel { /* Painel esquerdo (verde) */
+        .promo-panel {
             background-color: var(--mid-green-panel);
             color: var(--white);
             width: 45%;
@@ -71,7 +71,7 @@
             align-items: center;
             text-align: center;
         }
-        .promo-panel img { /* Logo no painel esquerdo */
+        .promo-panel img {
             width: 80px;
             margin-bottom: 10px;
         }
@@ -85,7 +85,7 @@
             margin-bottom: 30px;
             opacity: 0.9;
         }
-        .promo-panel .btn-outline { /* Botão "Cadastre-se" */
+        .promo-panel .btn-outline {
             display: inline-block;
             padding: 12px 40px;
             border: 2px solid var(--white);
@@ -100,7 +100,7 @@
             color: var(--mid-green-panel);
         }
 
-        .form-panel { /* Painel direito (formulário de login) */
+        .form-panel { 
             width: 55%;
             padding: 40px 60px;
             display: flex;
@@ -121,19 +121,19 @@
             font-size: 0.9em;
         }
 
-        form p { /* Cada campo do formulário */
+        form p {
             display: flex;
             flex-direction: column;
             margin-bottom: 1.2em;
-            position: relative; /* Para o ícone */
+            position: relative;
         }
-        form label { display: none; } /* Esconde o label padrão do Django */
+        form label { display: none; }
         form input {
             background-color: var(--light-gray-input);
             border: none;
             border-radius: var(--border-radius-input);
             padding: 15px 20px;
-            padding-left: 50px; /* Espaço para o ícone */
+            padding-left: 50px;
             font-family: 'Poppins', sans-serif;
             font-size: 1em;
         }
@@ -146,7 +146,7 @@
             outline-offset: -2px;
         }
 
-        .input-icon { /* Ícones dentro dos inputs */
+        .input-icon {
             position: absolute;
             left: 20px;
             top: 50%;
@@ -155,7 +155,7 @@
             font-size: 1.2em;
         }
 
-        .password-toggle { /* Olho para mostrar/esconder senha */
+        .password-toggle {
             position: absolute;
             right: 20px;
             top: 50%;
@@ -165,7 +165,7 @@
             font-size: 1.2em;
         }
 
-        form button { /* Botão "Entrar" */
+        form button {
             background-color: var(--mid-green-panel);
             color: var(--white);
             border: none;
@@ -186,7 +186,7 @@
             margin-top: 20px;
             color: var(--text-light-gray);
             text-decoration: none;
-            display: block; /* Para centralizar */
+            display: block;
         }
         .forgot-password-link:hover {
             text-decoration: underline;
@@ -199,7 +199,7 @@
     <div class="auth-container">
         
         <div class="promo-panel">
-            <img src="{% static 'images/Locus.png' %}" alt="Logo Lócus" class="logo">
+            <img src="{% static 'images/logo.jpg' %}" alt="Logo Lócus" class="logo">
             <h2>Ainda não tem uma conta?</h2>
             <p>Faça o cadastro da sua conta abaixo!</p>
             <a href="{% url 'app:cadastro' %}" class="btn-outline">CADASTRAR-SE</a>
@@ -231,30 +231,28 @@
     </div>
 
     <script>
-        // Script para alternar visibilidade da senha
         function togglePasswordVisibility(passwordFieldId) {
             const passwordField = document.getElementById(passwordFieldId);
-            const toggleButton = passwordField.nextElementSibling; // O elemento 'olho'
+            const toggleButton = passwordField.nextElementSibling;
             if (passwordField.type === "password") {
                 passwordField.type = "text";
-                toggleButton.textContent = "🙈"; // Altera para ícone de olho riscado
+                toggleButton.textContent = "🙈";
             } else {
                 passwordField.type = "password";
-                toggleButton.textContent = "👁️"; // Altera para ícone de olho
+                toggleButton.textContent = "👁️";
             }
         }
 
-        // Adiciona placeholders e ids aos inputs do Django
         document.addEventListener('DOMContentLoaded', function() {
             const usernameInput = document.querySelector('input[name="username"]');
             if (usernameInput) {
                 usernameInput.setAttribute('placeholder', 'Usuário');
-                usernameInput.setAttribute('id', 'id_username'); // Garante que tenha um ID
+                usernameInput.setAttribute('id', 'id_username');
             }
             const passwordInput = document.querySelector('input[name="password"]');
             if (passwordInput) {
                 passwordInput.setAttribute('placeholder', 'Senha');
-                passwordInput.setAttribute('id', 'id_password'); // Garante que tenha um ID
+                passwordInput.setAttribute('id', 'id_password');
             }
         });
     </script>
