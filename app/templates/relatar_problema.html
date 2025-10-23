@@ -11,6 +11,36 @@
     </style>
 {% endblock %}
 
+<<<<<<< HEAD
+=======
+{% block navbar %}
+    <nav class="bg-[#2F7E32] border-b border-white/20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="relative flex items-center justify-between h-20">
+                <div class="flex items-center">
+                    <button id="mobile-menu-button" class="text-white text-2xl mr-4 p-2 rounded-md hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">☰</button>
+                    <div class="flex-shrink-0">
+                        <a href="{% url 'app:dashboard' %}">
+                            <img class="h-10" src="{% static 'images/logo.png' %}" alt="Locus Logo">
+                        </a>
+                    </div>
+                </div>
+                <div class="flex-grow mx-8">
+                    <div class="relative"><span class="absolute inset-y-0 left-0 flex items-center pl-3"><svg class="h-5 w-5 text-white/70" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" /></svg></span><input class="block w-full bg-white/20 border border-transparent rounded-full py-2 pl-10 pr-3 leading-5 text-white placeholder-white/70 focus:outline-none focus:bg-white/30 focus:ring-0 sm:text-sm" placeholder="Pesquisar..." type="search"></div>
+                </div>
+                <div class="flex items-center">
+                    <span class="text-white mr-4">Olá, {{ user.first_name|default:user.username }}!</span>
+                    <div class="w-12 h-12 bg-white/30 rounded-full"></div>
+                </div>
+                <div id="mobile-menu" class="hidden absolute top-16 left-0 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5">
+                    <a href="{% url 'app:lista_ideias' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Ideias</a>
+                    <a href="{% url 'app:lista_problemas' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Problemas</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+{% endblock %}
+>>>>>>> fcc06e69ae1b3e3e2fc85d9a8332bace0eacfe48
 {% block content %}
 <div class="bg-[#2F7E32] text-white min-h-screen px-4 sm:px-6 lg:px-8 py-12">
     <div class="max-w-3xl mx-auto">

@@ -15,6 +15,7 @@
             <div class="relative flex items-center justify-between h-20">
                 <div class="flex items-center">
                     <button id="mobile-menu-button" class="text-white text-2xl mr-4 p-2 rounded-md hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">☰</button>
+<<<<<<< HEAD
                     <div class="flex-shrink-0"><a href="{% if user.is_authenticated %}{% url 'app:dashboard' %}{% else %}{% url 'app:lista_ideias' %}{% endif %}"><img class="h-10" src="{% static 'images/logo.jpg' %}" alt="Locus Logo"></a></div>
                 </div>
                 
@@ -22,6 +23,14 @@
                     <div class="relative">
                         <span class="absolute inset-y-0 left-0 flex items-center pl-3"><svg class="h-5 w-5 text-white/70" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" /></svg></span>
                         <input id="search-input" class="block w-full bg-white/20 border border-transparent rounded-full py-2 pl-10 pr-3 leading-5 text-white placeholder-white/70 focus:outline-none focus:bg-white/30 focus:ring-0 sm:text-sm" placeholder="Pesquisar..." type="search" autocomplete="off">
+=======
+                    <div class="flex-shrink-0">
+                        
+                        <a href="{% if user.is_authenticated %}{% url 'app:dashboard' %}{% else %}{% url 'app:lista_ideias' %}{% endif %}">
+                            <img class="h-24 w-auto" src="{% static 'images/logo.png' %}" alt="Locus Logo">
+                        </a>
+
+>>>>>>> fcc06e69ae1b3e3e2fc85d9a8332bace0eacfe48
                     </div>
                     <div id="search-results-container" class="hidden absolute mt-2 w-full rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-20"></div>
                 </div>
