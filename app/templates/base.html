@@ -41,7 +41,7 @@
                 <div id="mobile-menu" class="absolute top-16 left-0 w-56 rounded-md shadow-lg py-2 bg-[#4C9A50] ring-1 ring-black ring-opacity-5 z-10 transition ease-out duration-200 transform origin-top-left opacity-0 scale-95 pointer-events-none">
                     <a href="{% url 'app:dashboard' %}" class="block px-4 py-2 text-base text-white hover:bg-white/10 rounded-md mx-2">Dashboard</a>
                     <a href="{% url 'app:perfil' %}" class="block px-4 py-2 text-base text-white hover:bg-white/10 rounded-md mx-2">Meu Perfil</a>
-                    <a href="{% url 'app:lista_ideias' %}" class="block px-4 py-2 text-base text-white hover:bg-white/10 rounded-md mx-2">Ideias</a>
+                    <a href="{% url 'app:lista_ideias' %}" class="block px-4 py-2 text-base text-white hover:bg-white/10 rounded-md mx-2">Ideiaas</a>
                     <a href="{% url 'app:lista_problemas' %}" class="block px-4 py-2 text-base text-white hover:bg-white/10 rounded-md mx-2">Problemas</a>
                     {% if user.is_authenticated %}<form action="{% url 'app:logout' %}" method="post">{% csrf_token %}<button type="submit" class="block w-full text-left px-4 py-2 text-base text-white hover:bg-white/10 rounded-md mx-2">Sair</button></form>{% endif %}
                 </div>
