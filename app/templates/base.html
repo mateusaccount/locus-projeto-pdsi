@@ -17,7 +17,7 @@
                     <button id="mobile-menu-button" class="text-white text-2xl mr-4 p-2 rounded-md hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">☰</button>
                     <div class="flex-shrink-0">
                         <a href="{% if user.is_authenticated %}{% url 'app:dashboard' %}{% else %}{% url 'app:lista_ideias' %}{% endif %}">
-                            <img class="h-10" src="{% static 'images/logo.jpg' %}" alt="Locus Logo">
+                            <img class="h-10" src="{% static 'images/logo_sem_nome.png' %}" alt="Locus Logo">
                         </a>
                     </div>
                 </div>
