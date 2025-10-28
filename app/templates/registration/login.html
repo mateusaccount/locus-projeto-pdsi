@@ -14,8 +14,8 @@
         body::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: url("{% static 'images/tree_background.png' %}"); background-repeat: no-repeat; background-position: top right; background-size: contain; opacity: 0.2; z-index: 0; }
         .auth-container { display: flex; width: 900px; max-width: 95%; height: 600px; background-color: var(--white); border-radius: var(--border-radius-card); box-shadow: 0 10px 30px rgba(0,0,0,0.2); overflow: hidden; position: relative; z-index: 1; }
         .promo-panel { background-color: var(--mid-green-panel); color: var(--white); width: 45%; padding: 40px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
-        .promo-panel img { width: 80px; margin-bottom: 10px; }
-        .promo-panel h2 { font-size: 1.8em; margin-bottom: 15px; font-weight: 600; }
+        .promo-panel img { width: 120px;}
+        .promo-panel h2 { font-size: 1.8em; margin-bottom: 1px; font-weight: 600; }
         .promo-panel p { font-size: 0.9em; margin-bottom: 30px; opacity: 0.9; }
         .promo-panel .btn-outline { display: inline-block; padding: 12px 40px; border: 2px solid var(--white); border-radius: var(--button-border-radius); color: var(--white); text-decoration: none; font-weight: 600; transition: background-color 0.3s, color 0.3s; }
         .promo-panel .btn-outline:hover { background-color: var(--white); color: var(--mid-green-panel); }
@@ -36,10 +36,11 @@
         ul.errorlist { list-style-type: none; padding: 0; color: red; font-size: 0.9em; margin-top: 5px; text-align: left;}
     </style>
 </head>
+
 <body>
     <div class="auth-container">
         <div class="promo-panel">
-            <img src="{% static 'app/images/logo.png' %}" alt="Logo Lócus" class="logo">
+            <img src="{% static 'images/logo.png' %}" alt="Logo Lócus" width="90" heigth="90" class="logo">
             <h2>Ainda não tem uma conta?</h2>
             <p>Faça o cadastro da sua conta abaixo!</p>
             <a href="{% url 'app:cadastro' %}" class="btn-outline">CADASTRAR-SE</a>
