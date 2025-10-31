@@ -1,0 +1,9 @@
+{% extends 'registration/base_auth.html' %}
+{% block title %}Link Enviado{% endblock %}
+{% block auth_content %}
+<div style="max-width: 450px; width: 100%; background-color: white; padding: 2.5rem; border-radius: 1.25rem; box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 1; text-align: center;">
+    <h2 style="font-size: 2rem; font-weight: 700; color: #333; margin-bottom: 1rem;">Verifique seu E-mail</h2>
+    <p style="color: #666;">Enviamos um link para o seu endereço de e-mail para que você possa redefinir sua senha. Se não o encontrar, verifique sua caixa de spam.</p>
+    <a href="{% url 'app:login' %}" style="display: inline-block; margin-top: 1.5rem; color: #0056b3; text-decoration: none;">&larr; Voltar para o Login</a>
+</div>
+{% endblock %}

@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, reverse_lazy
 from django.contrib.auth import views as auth_views
 from . import views
 
@@ -35,4 +35,25 @@ urlpatterns = [
     path('perfil/', views.perfil_usuario, name='perfil'),
     path('pesquisa/', views.pesquisa, name='pesquisa'),
     path('api/pesquisa/', views.api_pesquisa, name='api_pesquisa'),
+
+    # --- ROTAS DE RECUPERAÇÃO DE SENHA ATUALIZADAS ---
+    path('password_reset/', auth_views.PasswordResetView.as_view(
+        template_name='registration/recuperacao_senha_form.html',
+        email_template_name='registration/recuperacao_senha_email.html',
+        subject_template_name='registration/recuperacao_senha_assunto.txt',
+        success_url=reverse_lazy('app:password_reset_done')
+    ), name='password_reset'),
+    
+    path('password_reset/done/', auth_views.PasswordResetDoneView.as_view(
+        template_name='registration/recuperacao_senha_done.html'
+    ), name='password_reset_done'),
+    
+    path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(
+        template_name='registration/recuperacao_senha_confirmada.html',
+        success_url=reverse_lazy('app:password_reset_complete')
+    ), name='password_reset_confirm'),
+    
+    path('reset/done/', auth_views.PasswordResetCompleteView.as_view(
+        template_name='registration/recuperacao_senha_completa.html'
+    ), name='password_reset_complete'),
 ]

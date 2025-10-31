@@ -129,3 +129,13 @@ AUTH_USER_MODEL = 'app.CustomUsuario'
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/dashboard/'
 LOGOUT_REDIRECT_URL = '/'
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# --- CONFIGURAÇÃO DO GMAIL (DEIXE COMENTADA PARA USAR DEPOIS, SE QUISER) ---
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# EMAIL_HOST_USER = 'seu-email-aqui@gmail.com'
+# EMAIL_HOST_PASSWORD = 'sua-senha-de-app-de-16-digitos'

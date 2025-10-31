@@ -1,0 +1,9 @@
+{% extends 'registration/base_auth.html' %}
+{% block title %}Senha Redefinida{% endblock %}
+{% block auth_content %}
+<div style="max-width: 450px; width: 100%; background-color: white; padding: 2.5rem; border-radius: 1.25rem; box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 1; text-align: center;">
+    <h2 style="font-size: 2rem; font-weight: 700; color: #333; margin-bottom: 1rem;">Senha Alterada com Sucesso!</h2>
+    <p style="color: #666;">Sua senha foi redefinida. Você já pode fazer o login com sua nova senha.</p>
+    <a href="{% url 'app:login' %}" style="display: inline-block; margin-top: 1.5rem; background-color: #2F7E32; color: white; font-weight: 600; padding: 0.75rem 2rem; border-radius: 9999px; text-decoration: none;">Fazer Login</a>
+</div>
+{% endblock %}

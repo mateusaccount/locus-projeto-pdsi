@@ -55,7 +55,7 @@
                 <p style="margin-bottom: 0.5em;"><span class="input-icon">🔒</span>{{ form.password }}<span class="password-toggle" onclick="togglePasswordVisibility('id_password')">👁️</span>{% if form.password.errors %}<ul class="errorlist">{% for error in form.password.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}</p>
                 <button type="submit">ENTRAR</button>
             </form>
-            <a href="#" class="forgot-password-link">Esqueci minha senha.</a>
+            <a href="{% url 'app:password_reset' %}" class="forgot-password-link">Esqueci minha senha.</a>
         </div>
     </div>
     <script>

@@ -33,7 +33,7 @@
                     <a href="{% url 'app:perfil' %}" class="block px-4 py-2 text-base text-white hover:bg-white/10 rounded-md mx-2">Meu Perfil</a>
                     <a href="{% url 'app:lista_ideias' %}" class="block px-4 py-2 text-base text-white hover:bg-white/10 rounded-md mx-2">Ideias</a>
                     <a href="{% url 'app:lista_problemas' %}" class="block px-4 py-2 text-base text-white hover:bg-white/10 rounded-md mx-2">Problemas</a>
-                    {% if user.is_authenticated %}<form action="{% url 'app:logout' %}" method="post"><button type="submit" class="block w-full text-left px-4 py-2 text-base text-white hover:bg-white/10 rounded-md mx-2">Sair</button></form>{% endif %}
+                    {% if user.is_authenticated %}<form action="{% url 'app:logout' %}" method="post">{% csrf_token %}<button type="submit" class="block w-full text-left px-4 py-2 text-base text-white hover:bg-white/10 rounded-md mx-2">Sair</button></form>{% endif %}
                 </div>
             </div>
         </div>
