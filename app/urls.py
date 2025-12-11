@@ -59,4 +59,5 @@ urlpatterns = [
     ), name='password_reset_complete'),
 
     path('perfil/editar/', views.editar_perfil, name='editar_perfil'),
+    path('api/live-search/', views.api_live_search, name='api_live_search'),
 ]

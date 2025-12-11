@@ -1,51 +1,126 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-br" class="h-full bg-gray-50">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crie sua Conta - Lócus</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>Cadastro - Locus</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        :root { --dark-green-bg: #3A6B35; --mid-green-button: #5B8C5A; --white: #FFFFFF; --light-gray-input: #F0F2F5; --text-dark: #333333; --text-light-gray: #6c757d; }
-        body { font-family: 'Poppins', sans-serif; background-color: var(--dark-green-bg); margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow: hidden; position: relative; }
-        body::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: url("{% static 'app/images/tree_background.png' %}"); background-repeat: no-repeat; background-position: top right; background-size: contain; opacity: 0.2; z-index: 0; }
-        .register-container { width: 600px; max-width: 90%; background-color: var(--white); border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); padding: 40px; position: relative; z-index: 1; text-align: center; }
-        .back-arrow { position: absolute; top: 30px; left: 30px; font-size: 1.8em; color: var(--text-light-gray); text-decoration: none; font-weight: 600; }
-        h1 { font-size: 2.2em; color: var(--text-dark); margin-top: 0; margin-bottom: 10px; font-weight: 700; }
-        .subtitle { color: var(--text-light-gray); margin-bottom: 30px; font-size: 0.9em; }
-        form p { display: flex; flex-direction: column; margin-bottom: 1.2em; position: relative; }
-        form label { display: none; }
-        form input, form select { background-color: var(--light-gray-input); border: none; border-radius: 8px; padding: 15px 20px; padding-left: 50px; font-family: 'Poppins', sans-serif; font-size: 1em; box-sizing: border-box; width: 100%; }
-        form input:focus, form select:focus { outline: 2px solid var(--mid-green-button); outline-offset: -2px; }
-        .input-icon { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: var(--text-light-gray); }
-        button[type="submit"] { background-color: var(--mid-green-button); color: var(--white); border: none; border-radius: 30px; padding: 15px; font-weight: 600; font-size: 1em; cursor: pointer; transition: background-color 0.3s; width: 100%; margin-top: 1em; }
-        button[type="submit"]:hover { background-color: var(--dark-green-bg); }
-        .suap-link { font-size: 0.9em; margin-top: 20px; color: var(--text-light-gray); text-decoration: none; display: block; }
-        .suap-link:hover { text-decoration: underline; }
-        ul.errorlist { list-style-type: none; padding: 0; color: red; font-size: 0.9em; margin-top: 5px; text-align: left;}
+        body { font-family: 'Inter', sans-serif; }
+        .bg-locus-gradient { background: linear-gradient(135deg, #2F7E32 0%, #1a5220 100%); }
+        .helptext ul { list-style-type: disc; padding-left: 20px; color: #6b7280; margin-top: 4px; }
+        .helptext li { font-size: 0.75rem; margin-bottom: 2px; }
     </style>
 </head>
-<body>
-    <div class="register-container">
-        <a href="{% url 'app:login' %}" class="back-arrow">&larr;</a>
-        <h1>Crie sua conta</h1>
-        <p class="subtitle">Preencha seus dados para realizar o cadastro</p>
-        <form method="post">
-            {% csrf_token %}
-            {% if form.non_field_errors %}<ul class="errorlist">{% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
-            <p><span class="input-icon">👤</span>{{ form.first_name }}{% if form.first_name.errors %}<ul class="errorlist">{% for error in form.first_name.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}</p>
-            <p><span class="input-icon">@</span>{{ form.username }}{% if form.username.errors %}<ul class="errorlist">{% for error in form.username.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}</p>
-            <p><span class="input-icon">📧</span>{{ form.email }}{% if form.email.errors %}<ul class="errorlist">{% for error in form.email.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}</p>
-            <p><span class="input-icon">🔒</span>{{ form.password1 }}{% if form.password1.errors %}<ul class="errorlist">{% for error in form.password1.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}</p>
-            <p><span class="input-icon">🔒</span>{{ form.password2 }}{% if form.password2.errors %}<ul class="errorlist">{% for error in form.password2.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}</p>
-            {{ form.tipo.as_hidden }}
-            {{ form.curso_departamento.as_hidden }}
-            <button type="submit">CADASTRAR-SE</button>
-        </form>
-        <a href="#" class="suap-link">Entrar pelo SUAP</a>
+<body class="h-full flex items-center justify-center p-4 py-8">
+
+    <div class="w-full max-w-4xl bg-white rounded-3xl shadow-xl overflow-hidden flex flex-col md:flex-row min-h-[550px]">
+        
+        <div class="hidden md:flex md:w-5/12 bg-locus-gradient flex-col justify-center items-center text-white p-10 text-center relative">
+            <div class="absolute inset-0 opacity-10 bg-[url('{% static 'images/tree_background.png' %}')] bg-cover bg-center"></div>
+            <div class="relative z-10">
+                <img src="{% static 'images/logo.png' %}" alt="Locus" class="h-16 mx-auto mb-6 brightness-0 invert opacity-90">
+                <h2 class="text-2xl font-bold mb-3">Bem-vindo</h2>
+                <p class="text-green-50 mb-8 text-sm leading-relaxed">
+                    Crie sua conta e ajude a transformar o IFRN.
+                </p>
+                <p class="text-xs text-green-200 uppercase font-bold mb-3">Já possui conta?</p>
+                <a href="{% url 'app:login' %}" class="inline-block px-8 py-2.5 border border-white text-white font-semibold rounded-full hover:bg-white hover:text-[#2F7E32] transition-all">
+                    Fazer Login
+                </a>
+            </div>
+        </div>
+
+        <div class="w-full md:w-7/12 p-8 md:p-12 bg-white flex flex-col justify-center">
+            
+            <div class="max-w-sm mx-auto w-full">
+                <h1 class="text-2xl font-bold text-gray-900 mb-6">Criar Conta</h1>
+
+                <form method="post" class="space-y-4">
+                    {% csrf_token %}
+
+                    {% if form.errors %}
+                        <div class="bg-red-50 text-red-600 p-4 rounded-lg text-sm border border-red-100 mb-4">
+                            <p class="font-bold mb-1">Ops! Corrija os erros abaixo:</p>
+                            <ul class="list-disc pl-5">
+                                {% for field in form %}
+                                    {% for error in field.errors %}
+                                        <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+                                    {% endfor %}
+                                {% endfor %}
+                                {% for error in form.non_field_errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Usuário</label>
+                        {{ form.username }}
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Nome Completo</label>
+                        {{ form.first_name }}
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">E-mail</label>
+                        {{ form.email }}
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Senha</label>
+                        {{ form.password1 }} 
+                        
+                        {% if form.password1.help_text %}
+                        <details class="mt-2 group">
+                            <summary class="text-xs text-[#2F7E32] font-semibold cursor-pointer hover:underline list-none flex items-center gap-1 select-none">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                Ver requisitos de segurança
+                            </summary>
+                            <div class="text-xs text-gray-500 mt-1 p-2 bg-gray-50 rounded border border-gray-100 helptext transition-all">
+                                {{ form.password1.help_text|safe }}
+                            </div>
+                        </details>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Confirmar Senha</label>
+                        {{ form.password2 }}
+                    </div>
+
+                    <button type="submit" class="w-full py-3 px-4 mt-6 bg-[#2F7E32] text-white font-bold rounded-lg hover:bg-[#266e29] transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
+                        CRIAR CONTA
+                    </button>
+                </form>
+
+                <p class="mt-6 text-center text-sm text-gray-600 md:hidden">
+                    Já tem conta?
+                    <a href="{% url 'app:login' %}" class="font-bold text-[#2F7E32]">Entrar</a>
+                </p>
+            </div>
+        </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Estiliza os inputs automaticamente
+            const inputs = document.querySelectorAll('input');
+            inputs.forEach(input => {
+                input.classList.add(
+                    'w-full', 'px-4', 'py-2.5', 
+                    'bg-gray-50', 'border', 'border-gray-300', 'rounded-lg', 
+                    'text-gray-900', 'text-sm',
+                    'focus:ring-2', 'focus:ring-[#2F7E32]', 'focus:border-transparent', 'focus:bg-white',
+                    'transition-all', 'outline-none'
+                );
+            });
+        });
+    </script>
 </body>
 </html>

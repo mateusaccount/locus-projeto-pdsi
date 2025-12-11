@@ -27,8 +27,6 @@ class Problema(models.Model):
     descricao = models.TextField()
     area = models.CharField(max_length=50, choices=AREA_CHOICES)
     localizacao = models.CharField(max_length=255, help_text="Ex: Bairro, Cidade, Campus")
-    
-    # ADICIONADO: Campo de imagem para as evidências
     imagem = models.ImageField(upload_to='problemas/', blank=True, null=True)
     
     autor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
@@ -56,8 +54,6 @@ class Ideia(models.Model):
     ]
     titulo = models.CharField(max_length=200)
     descricao = models.TextField()
-    
-    # ADICIONADO: Campo de imagem para ilustrar a ideia
     imagem = models.ImageField(upload_to='ideias/', blank=True, null=True)
     
     autor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -76,12 +72,18 @@ class Ideia(models.Model):
         blank=True
     )
 
-    # Propriedade calculada para exibir no template como {{ ideia.pontuacao }}
+    # --- PROPRIEDADES DE VOTAÇÃO ---
+    @property
+    def total_upvotes(self):
+        return self.votos.filter(tipo='upvote').count()
+
+    @property
+    def total_downvotes(self):
+        return self.votos.filter(tipo='downvote').count()
+
     @property
     def pontuacao(self):
-        upvotes = self.votos.filter(tipo='upvote').count()
-        downvotes = self.votos.filter(tipo='downvote').count()
-        return upvotes - downvotes
+        return self.total_upvotes - self.total_downvotes
 
     @property
     def total_reports(self):
@@ -111,7 +113,6 @@ class Votacao(models.Model):
     tipo = models.CharField(max_length=10, choices=TIPO_VOTO_CHOICES)
 
     class Meta:
-        # Garante que um usuário só pode votar uma vez por ideia
         unique_together = ('ideia', 'usuario')
 
     def __str__(self):

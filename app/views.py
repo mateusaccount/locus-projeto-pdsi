@@ -3,68 +3,67 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login
-from django.db.models import Count, Q
+from django.db.models import Count, Q, F
 from .models import Ideia, Comentario, Votacao, Problema
-from .forms import IdeiaForm, CustomUserCreationForm, ProblemaForm, ComentarioForm, EditarPerfilForm
+from .forms import IdeiaForm, CustomUserCreationForm, ProblemaForm, ComentarioForm, EditarPerfilForm, CadastroForm
 from django.contrib import messages
 from django.http import JsonResponse
-
+from django.urls import reverse
 
 def lista_ideias(request):
-    ideias_destaque = Ideia.objects.filter(status='aprovada').annotate(
-        pontuacao=Count('votos', filter=Q(votos__tipo='upvote')) - Count('votos', filter=Q(votos__tipo='downvote'))
-    ).order_by('-pontuacao')[:3]
-
-    area_selecionada = request.GET.get('area')
-    ideias_aprovadas = Ideia.objects.filter(status='aprovada')
-    if area_selecionada:
-        ideias_aprovadas = ideias_aprovadas.filter(problema_alvo__area=area_selecionada)
-    ideias_aprovadas = ideias_aprovadas.order_by('-data_criacao')
+    filtro = request.GET.get('filtro', 'recentes')
     
-    areas_disponiveis = Problema.AREA_CHOICES
+    # 1. Cria a consulta base "ensinando" o banco a contar votos
+    # annotate cria campos virtuais 'ups', 'downs' e 'saldo' direto na query
+    ideias_list = Ideia.objects.annotate(
+        ups=Count('votos', filter=Q(votos__tipo='upvote')),
+        downs=Count('votos', filter=Q(votos__tipo='downvote'))
+    ).annotate(
+        saldo=F('ups') - F('downs')
+    )
 
-    contexto = {
-        'ideias_destaque': ideias_destaque,
-        'ideias': ideias_aprovadas,
-        'areas': areas_disponiveis,
-        'area_selecionada': area_selecionada,
-    }
-    return render(request, 'lista_ideias.html', contexto)
+    # 2. Aplica a ordenação baseada no filtro
+    if filtro == 'populares':
+        # Ordena pelo saldo (maior para menor)
+        ideias_list = ideias_list.order_by('-saldo', '-data_criacao')
+    else:
+        # Ordena por data (padrão)
+        ideias_list = ideias_list.order_by('-data_criacao')
+
+    return render(request, 'lista_ideias.html', {
+        'ideias': ideias_list,
+        'filtro_atual': filtro # Passamos para o template saber qual botão pintar
+    })
 
 def detalhe_ideia(request, ideia_id):
-    # 1. Busca a ideia ou dá erro 404 se não existir
     ideia = get_object_or_404(Ideia, id=ideia_id)
+    comentarios = Comentario.objects.filter(ideia=ideia).order_by('-data_criacao')
     
-    # 2. Processamento do Formulário de Comentário (POST)
+    # Verifica se o usuário logado já votou nessa ideia
+    voto_usuario = None
+    if request.user.is_authenticated:
+        # Tenta pegar o voto do usuário nesta ideia
+        voto = Votacao.objects.filter(ideia=ideia, usuario=request.user).first()
+        if voto:
+            voto_usuario = voto.tipo # Vai ser 'upvote' ou 'downvote'
+
+    # Lógica de Salvar Comentário (Mantida igual)
     if request.method == 'POST':
         if not request.user.is_authenticated:
             return redirect('app:login')
-            
-        # Verifica se a ação é realmente comentar (pelo input hidden do HTML)
-        tipo_acao = request.POST.get('tipo_acao')
         
+        tipo_acao = request.POST.get('tipo_acao')
         if tipo_acao == 'comentar':
             texto_recebido = request.POST.get('texto_comentario')
-            
             if texto_recebido:
-                # Cria e salva o comentário no banco
-                Comentario.objects.create(
-                    ideia=ideia,
-                    autor=request.user,
-                    texto=texto_recebido  # Certifique-se que no models.py o campo é 'texto'
-                )
-                messages.success(request, 'Comentário enviado com sucesso!')
-                # Recarrega a página para mostrar o novo comentário
+                Comentario.objects.create(ideia=ideia, autor=request.user, texto=texto_recebido)
+                messages.success(request, 'Comentário enviado!')
                 return redirect('app:detalhe_ideia', ideia_id=ideia.id)
 
-    # 3. Busca os comentários para exibir (ATENÇÃO AQUI)
-    # Buscamos todos os comentários ligados a esta ideia, ordenados do mais novo para o mais antigo
-    lista_comentarios = Comentario.objects.filter(ideia=ideia).order_by('-data_criacao')
-
-    # 4. Renderiza o template passando os dados
     return render(request, 'detalhe_ideia.html', {
         'ideia': ideia,
-        'comentarios': lista_comentarios, # Essa chave 'comentarios' deve ser igual ao usado no {% for %} do HTML
+        'comentarios': comentarios,
+        'voto_usuario': voto_usuario, # Passamos essa informação nova para o template
     })
 
 @login_required
@@ -94,41 +93,41 @@ def votar_ideia(request, ideia_id, tipo_voto):
     if request.method == 'POST':
         ideia = get_object_or_404(Ideia, id=ideia_id)
         
-        # Mapeia 'cima'/'baixo' da URL para 'upvote'/'downvote' do Modelo
+        # Converte o parametro da URL para o valor do banco
         tipo_modelo = 'upvote' if tipo_voto == 'cima' else 'downvote'
         
-        # Tenta pegar o voto existente desse usuário nessa ideia
+        # Busca voto existente
         voto_existente = Votacao.objects.filter(usuario=request.user, ideia=ideia).first()
         
         if voto_existente:
             if voto_existente.tipo == tipo_modelo:
-                # Se clicou no mesmo botão, remove o voto (toggle)
+                # Se clicou no MESMO botão que já tinha votado -> Remove o voto (Toggle)
                 voto_existente.delete()
-                messages.info(request, 'Voto removido.')
             else:
-                # Se mudou o voto (de cima pra baixo ou vice-versa), atualiza
+                # Se clicou no OUTRO botão -> Atualiza o voto (Switch)
                 voto_existente.tipo = tipo_modelo
                 voto_existente.save()
-                messages.success(request, 'Voto atualizado!')
         else:
-            # Se não existe voto, cria um novo
+            # Se não tinha voto -> Cria novo
             Votacao.objects.create(usuario=request.user, ideia=ideia, tipo=tipo_modelo)
-            messages.success(request, 'Voto computado!')
         
+        # Não precisamos salvar ideia.pontuacao aqui pois ela é calculada automaticamente (@property)
+        
+    # Redireciona de volta para a ideia (com âncora para não rolar a página pro topo, opcional)
     return redirect('app:detalhe_ideia', ideia_id=ideia_id)
 
 def cadastro(request):
     if request.method == 'POST':
-        form = CustomUserCreationForm(request.POST)
+        form = CadastroForm(request.POST)
         if form.is_valid():
             user = form.save()
+            # Faz o login automático após o cadastro (opcional, mas recomendado)
             login(request, user)
-            return redirect('app:dashboard')
+            return redirect('app:dashboard') # Ou 'app:lista_ideias' se preferir
     else:
-        form = CustomUserCreationForm()
+        form = CadastroForm()
     
-    contexto = {'form': form}
-    return render(request, 'registration/cadastro.html', contexto)
+    return render(request, 'registration/cadastro.html', {'form': form})
 
 def lista_problemas(request):
     area_selecionada = request.GET.get('area')
@@ -244,25 +243,29 @@ def editar_perfil(request):
 
 def pesquisa(request):
     query = request.GET.get('q', '')
-    resultados = []
+    ideias = []
+    problemas = []
+    total_resultados = 0
+
     if query:
+        # Busca em Ideias (Título ou Descrição)
         ideias = Ideia.objects.filter(
             Q(titulo__icontains=query) | Q(descricao__icontains=query)
-        ).filter(status='aprovada')
-        problemas = Problema.objects.filter(
-            Q(titulo__icontains=query) | Q(descricao__icontains=query)
-        )
-        for item in ideias:
-            resultados.append({'item': item, 'tipo': 'Ideia'})
+        ).order_by('-data_criacao')
         
-        for item in problemas:
-            resultados.append({'item': item, 'tipo': 'Problema'})
+        # Busca em Problemas (Título, Descrição ou Localização)
+        problemas = Problema.objects.filter(
+            Q(titulo__icontains=query) | Q(descricao__icontains=query) | Q(localizacao__icontains=query)
+        ).order_by('-data_criacao')
 
-    contexto = {
+        total_resultados = len(ideias) + len(problemas)
+
+    return render(request, 'pesquisa.html', {
         'query': query,
-        'resultados': resultados,
-    }
-    return render(request, 'pesquisa.html', contexto)
+        'ideias': ideias,
+        'problemas': problemas,
+        'total_resultados': total_resultados
+    })
 
 def api_pesquisa(request):
     query = request.GET.get('q', '')
@@ -291,3 +294,28 @@ def api_pesquisa(request):
             })
             
     return JsonResponse(resultados_finais, safe=False)
+
+def api_live_search(request):
+    query = request.GET.get('q', '')
+    results = []
+
+    if len(query) > 1:
+        ideias = Ideia.objects.filter(titulo__icontains=query)[:5]
+        for ideia in ideias:
+            results.append({
+                'titulo': ideia.titulo,
+                'tipo': 'Ideia',
+                'url': reverse('app:detalhe_ideia', args=[ideia.id]),
+                'cor': 'text-green-600 bg-green-50 border-green-200'
+            })
+
+        problemas = Problema.objects.filter(titulo__icontains=query)[:5]
+        for problema in problemas:
+            results.append({
+                'titulo': problema.titulo,
+                'tipo': 'Problema',
+                'url': reverse('app:detalhe_problema', args=[problema.id]),
+                'cor': 'text-red-600 bg-red-50 border-red-200'
+            })
+
+    return JsonResponse({'results': results})

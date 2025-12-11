@@ -122,3 +122,14 @@ class EditarPerfilForm(forms.ModelForm):
             'email': 'E-mail',
             'username': 'Nome de Usuário'
         }
+
+class CadastroForm(UserCreationForm):
+    # Forçamos esses campos a serem obrigatórios e traduzidos
+    first_name = forms.CharField(label="Nome Completo", max_length=150, required=True)
+    email = forms.EmailField(label="E-mail", required=True)
+
+    class Meta:
+        model = CustomUsuario
+        # Incluímos apenas os campos do MODELO. 
+        # As senhas NÃO entram aqui porque o UserCreationForm já as adiciona automaticamente.
+        fields = ('username', 'first_name', 'email')
