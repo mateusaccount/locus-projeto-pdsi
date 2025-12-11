@@ -1,66 +1,141 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-br" class="h-full bg-gray-50">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Lócus</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>Login - Locus</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root { --dark-green-bg: #3A6B35; --mid-green-panel: #5B8C5A; --white: #FFFFFF; --light-gray-input: #F0F2F5; --text-dark: #333333; --text-light-gray: #6c757d; --border-radius-card: 20px; --border-radius-input: 8px; --button-border-radius: 30px; }
-        body { font-family: 'Poppins', sans-serif; background-color: var(--dark-green-bg); margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow: hidden; position: relative; }
-        body::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: url("{% static 'images/tree_background.png' %}"); background-repeat: no-repeat; background-position: top right; background-size: contain; opacity: 0.2; z-index: 0; }
-        .auth-container { display: flex; width: 900px; max-width: 95%; height: 600px; background-color: var(--white); border-radius: var(--border-radius-card); box-shadow: 0 10px 30px rgba(0,0,0,0.2); overflow: hidden; position: relative; z-index: 1; }
-        .promo-panel { background-color: var(--mid-green-panel); color: var(--white); width: 45%; padding: 40px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
-        .promo-panel img { width: 120px;}
-        .promo-panel h2 { font-size: 1.8em; margin-bottom: 1px; font-weight: 600; }
-        .promo-panel p { font-size: 0.9em; margin-bottom: 30px; opacity: 0.9; }
-        .promo-panel .btn-outline { display: inline-block; padding: 12px 40px; border: 2px solid var(--white); border-radius: var(--button-border-radius); color: var(--white); text-decoration: none; font-weight: 600; transition: background-color 0.3s, color 0.3s; }
-        .promo-panel .btn-outline:hover { background-color: var(--white); color: var(--mid-green-panel); }
-        .form-panel { width: 55%; padding: 40px 60px; display: flex; flex-direction: column; justify-content: center; text-align: center; }
-        .form-panel h1 { font-size: 2.2em; color: var(--text-dark); margin-top: 0; margin-bottom: 10px; font-weight: 700; }
-        .form-panel .subtitle { color: var(--text-light-gray); margin-bottom: 30px; font-size: 0.9em; }
-        form p { display: flex; flex-direction: column; margin-bottom: 1.2em; position: relative; }
-        form label { display: none; }
-        form input { background-color: var(--light-gray-input); border: none; border-radius: var(--border-radius-input); padding: 15px 20px; padding-left: 50px; font-family: 'Poppins', sans-serif; font-size: 1em; }
-        form input::placeholder { color: var(--text-light-gray); opacity: 1; }
-        form input:focus { outline: 2px solid var(--mid-green-panel); outline-offset: -2px; }
-        .input-icon { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: var(--text-light-gray); font-size: 1.2em; }
-        .password-toggle { position: absolute; right: 20px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--text-light-gray); font-size: 1.2em; }
-        form button { background-color: var(--mid-green-panel); color: var(--white); border: none; border-radius: var(--button-border-radius); padding: 15px; font-weight: 600; font-size: 1em; cursor: pointer; transition: background-color 0.3s; width: 100%; margin-top: 1em; }
-        form button:hover { background-color: var(--dark-green-bg); }
-        .forgot-password-link { font-size: 0.9em; margin-top: 20px; color: var(--text-light-gray); text-decoration: none; display: block; }
-        .forgot-password-link:hover { text-decoration: underline; }
-        ul.errorlist { list-style-type: none; padding: 0; color: red; font-size: 0.9em; margin-top: 5px; text-align: left;}
+        body { font-family: 'Inter', sans-serif; }
+        .bg-locus-gradient {
+            background: linear-gradient(135deg, #2F7E32 0%, #1a5220 100%);
+        }
     </style>
 </head>
+<body class="h-full flex items-center justify-center p-4 sm:px-6 lg:px-8">
 
-<body>
-    <div class="auth-container">
-        <div class="promo-panel">
-            <img src="{% static 'images/logo.png' %}" alt="Logo Lócus" width="90" heigth="90" class="logo">
-            <h2>Ainda não tem uma conta?</h2>
-            <p>Faça o cadastro da sua conta abaixo!</p>
-            <a href="{% url 'app:cadastro' %}" class="btn-outline">CADASTRAR-SE</a>
+    <div class="w-full max-w-5xl h-[650px] bg-white rounded-3xl shadow-xl overflow-hidden flex flex-col md:flex-row">
+        
+        <div class="hidden md:flex md:w-1/2 bg-locus-gradient relative flex-col justify-center items-center text-white p-12 text-center">
+            <div class="absolute inset-0 opacity-10" style="background-image: url('{% static 'images/tree_background.png' %}'); background-size: cover; background-position: center;"></div>
+            
+            <div class="relative z-10 max-w-sm">
+                <img src="{% static 'images/logo.png' %}" alt="Logo Lócus" class="h-20 mx-auto mb-8 brightness-0 invert opacity-90">
+                
+                <h2 class="text-3xl font-bold mb-4 tracking-tight">Bem-vindo de volta!</h2>
+                <p class="text-green-50 mb-10 text-lg font-light leading-relaxed">
+                    Conecte-se para colaborar, sugerir ideias e transformar a nossa comunidade do IFRN.
+                </p>
+                <div class="space-y-4">
+                    <p class="text-sm text-green-100 font-medium uppercase tracking-wider">Ainda não tem conta?</p>
+                    <a href="{% url 'app:cadastro' %}" class="inline-block px-8 py-3 border-2 border-white/30 hover:border-white text-white font-semibold rounded-full hover:bg-white hover:text-[#2F7E32] transition-all duration-300">
+                        Criar minha conta
+                    </a>
+                </div>
+            </div>
         </div>
-        <div class="form-panel">
-            <h1>Login</h1>
-            <p class="subtitle">Preencha seus dados para realizar o Login</p>
-            <form method="post">
-                {% csrf_token %}
-                {% if form.non_field_errors %}<ul class="errorlist">{% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
-                <p><span class="input-icon">👤</span>{{ form.username }}{% if form.username.errors %}<ul class="errorlist">{% for error in form.username.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}</p>
-                <p style="margin-bottom: 0.5em;"><span class="input-icon">🔒</span>{{ form.password }}<span class="password-toggle" onclick="togglePasswordVisibility('id_password')">👁️</span>{% if form.password.errors %}<ul class="errorlist">{% for error in form.password.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}</p>
-                <button type="submit">ENTRAR</button>
-            </form>
-            <a href="{% url 'app:password_reset' %}" class="forgot-password-link">Esqueci minha senha.</a>
+
+        <div class="w-full md:w-1/2 p-8 md:p-16 flex flex-col justify-center bg-white relative">
+            
+            <div class="md:hidden text-center mb-8">
+                <img src="{% static 'images/logo.png' %}" alt="Logo Lócus" class="h-12 mx-auto">
+            </div>
+
+            <div class="max-w-sm mx-auto w-full">
+                <div class="mb-10">
+                    <h1 class="text-3xl font-bold text-gray-900 tracking-tight mb-2">Login</h1>
+                    <p class="text-gray-500">Preencha seus dados para entrar.</p>
+                </div>
+
+                <form method="post" class="space-y-6">
+                    {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                        <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-md mb-4">
+                            <div class="flex">
+                                <div class="ml-3">
+                                    <p class="text-sm text-red-700">{{ form.non_field_errors.0 }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                    
+                    <div class="space-y-1">
+                        <label for="id_username" class="block text-sm font-medium text-gray-700">Usuário</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                            </div>
+                            {{ form.username }}
+                        </div>
+                        {% if form.username.errors %}
+                            <p class="text-xs text-red-600 mt-1">{{ form.username.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="space-y-1">
+                        <div class="flex items-center justify-between">
+                            <label for="id_password" class="block text-sm font-medium text-gray-700">Senha</label>
+                        </div>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                            </div>
+                            {{ form.password }}
+                            <button type="button" onclick="togglePasswordVisibility('id_password')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none">
+                                <svg id="eye-icon" class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                            </button>
+                        </div>
+                        {% if form.password.errors %}
+                            <p class="text-xs text-red-600 mt-1">{{ form.password.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="flex items-center justify-end">
+                        <a href="{% url 'app:password_reset' %}" class="text-sm font-medium text-[#2F7E32] hover:text-[#1e5c21] hover:underline">
+                            Esqueceu a senha?
+                        </a>
+                    </div>
+
+                    <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-full shadow-lg shadow-green-900/10 text-sm font-bold text-white bg-[#2F7E32] hover:bg-[#266e29] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#2F7E32] transition-all transform hover:-translate-y-0.5">
+                        ENTRAR
+                    </button>
+                </form>
+
+                <p class="mt-8 text-center text-sm text-gray-600 md:hidden">
+                    Não tem uma conta?
+                    <a href="{% url 'app:cadastro' %}" class="font-medium text-[#2F7E32] hover:text-[#1e5c21]">
+                        Cadastre-se
+                    </a>
+                </p>
+            </div>
         </div>
     </div>
+
     <script>
-        function togglePasswordVisibility(passwordFieldId) { const passwordField = document.getElementById(passwordFieldId); const toggleButton = passwordField.nextElementSibling; if (passwordField.type === "password") { passwordField.type = "text"; toggleButton.textContent = "🙈"; } else { passwordField.type = "password"; toggleButton.textContent = "👁️"; } }
-        document.addEventListener('DOMContentLoaded', function() { const usernameInput = document.querySelector('input[name="username"]'); if (usernameInput) { usernameInput.setAttribute('placeholder', 'Usuário'); usernameInput.setAttribute('id', 'id_username'); } const passwordInput = document.querySelector('input[name="password"]'); if (passwordInput) { passwordInput.setAttribute('placeholder', 'Senha'); passwordInput.setAttribute('id', 'id_password'); } });
+        function togglePasswordVisibility(fieldId) {
+            const field = document.getElementById(fieldId);
+            const icon = document.getElementById('eye-icon');
+            if (field.type === "password") {
+                field.type = "text";
+                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />';
+            } else {
+                field.type = "password";
+                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />';
+            }
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputs = document.querySelectorAll('input[type="text"], input[type="password"]');
+            inputs.forEach(input => {
+                input.classList.add('block', 'w-full', 'pl-10', 'pr-10', 'py-3', 'border-gray-300', 'rounded-lg', 'text-gray-900', 'placeholder-gray-400', 'focus:outline-none', 'focus:ring-2', 'focus:ring-[#2F7E32]', 'focus:border-transparent', 'transition-all', 'sm:text-sm', 'bg-gray-50', 'focus:bg-white');
+            });
+            const userField = document.getElementById('id_username');
+            if(userField) userField.placeholder = "Seu nome de usuário";
+            const passField = document.getElementById('id_password');
+            if(passField) passField.placeholder = "••••••••";
+        });
     </script>
 </body>
 </html>

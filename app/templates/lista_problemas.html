@@ -1,59 +1,71 @@
 {% extends 'base.html' %}
 {% load static %}
-
-{% block title %}Problemas em Aberto - Locus{% endblock %}
+{% block title %}Mural de Problemas - Locus{% endblock %}
 
 {% block content %}
-<div class="bg-[#2F7E32] text-white min-h-screen px-4 sm:px-6 lg:px-8 py-12">
-    <div class="max-w-7xl mx-auto">
-        <h1 class="text-5xl font-bold mb-4">Problemas em Aberto</h1>
-        
-        {% if user.is_authenticated %}
-            <div class="my-8">
-                <a href="{% url 'app:relatar_problema' %}" class="bg-white text-[#2F7E32] font-bold py-3 px-8 rounded-full text-lg hover:bg-gray-200 transition">
-                    + Relatar Novo Problema
-                </a>
-            </div>
-        {% endif %}
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+    <div>
+        <h1 class="text-3xl font-bold text-gray-900 tracking-tight">Mural de Problemas</h1>
+        <p class="text-gray-500 mt-2 text-lg">Veja o que precisa ser resolvido no campus e proponha soluções.</p>
+    </div>
+    <a href="{% url 'app:relatar_problema' %}" class="inline-flex items-center justify-center px-6 py-3 border border-gray-200 text-base font-medium rounded-full shadow-sm text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-300 transition-all">
+        <svg class="mr-2 h-5 w-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+        Relatar Problema
+    </a>
+</div>
 
-        <div class="flex items-center space-x-2 mb-10 overflow-x-auto pb-2">
-            <span class="text-lg mr-4 flex-shrink-0">Filtrar por área:</span>
-            <a href="{% url 'app:lista_problemas' %}" class="flex-shrink-0 px-6 py-2 rounded-full text-sm font-semibold border-2 {% if not area_selecionada %}bg-white text-[#2F7E32] border-white{% else %}border-white hover:bg-white hover:text-[#2F7E32] transition{% endif %}">Mostrar todas</a>
-            {% for value, display in areas %}
-            <a href="?area={{ value }}" class="flex-shrink-0 px-6 py-2 rounded-full text-sm font-semibold border-2 {% if area_selecionada == value %}bg-white text-[#2F7E32] border-white{% else %}border-white hover:bg-white hover:text-[#2F7E32] transition{% endif %}">{{ display }}</a>
-            {% endfor %}
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for problema in problemas %}
+    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col h-full group">
+        <div class="p-6 flex-grow">
+            <div class="flex justify-between items-start mb-4">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-bold bg-red-50 text-red-600 border border-red-100 uppercase tracking-wide">
+                    Em Aberto
+                </span>
+                <span class="text-xs text-gray-400 font-medium">{{ problema.data_criacao|date:"d M" }}</span>
+            </div>
+
+            <a href="{% url 'app:detalhe_problema' problema.id %}" class="block group-hover:text-[#2F7E32] transition-colors">
+                <h3 class="text-lg font-bold text-gray-900 mb-1 line-clamp-2">{{ problema.titulo }}</h3>
+            </a>
+            <div class="flex items-center text-sm text-gray-500 mb-4">
+                <svg class="flex-shrink-0 mr-1.5 h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                {{ problema.localizacao|default:"Local não especificado" }}
+            </div>
+
+            <p class="text-gray-500 text-sm line-clamp-3 leading-relaxed">
+                {{ problema.descricao }}
+            </p>
         </div>
 
-        <h2 class="text-3xl font-bold mb-8">Todos os Problemas</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {% for problema in problemas %}
-            <div class="bg-[#4C9A50] p-6 rounded-2xl shadow-lg border-2 border-green-400/50 flex flex-col justify-between">
-                <div>
-                    <div class="flex justify-between items-start mb-3">
-                        <h3 class="text-2xl font-bold">{{ problema.titulo }}</h3>
-                        <span class="bg-black/20 text-white font-bold text-xs py-1 px-3 rounded-full flex items-center gap-1">
-                            🚩 <span>{{ problema.total_reports }}</span>
-                        </span>
-                    </div>
-                    <p class="text-sm opacity-80 h-24 overflow-hidden mb-4">{{ problema.descricao|truncatewords:25 }}</p>
+        <div class="bg-gray-50 px-6 py-4 border-t border-gray-100 flex items-center justify-between rounded-b-2xl">
+            <div class="flex items-center gap-2">
+                <div class="h-6 w-6 rounded-full bg-gray-200 flex items-center justify-center text-[10px] text-gray-600 font-bold">
+                    {{ problema.autor.username|slice:":1"|upper }}
                 </div>
-                <div>
-                    <div class="text-xs mb-4">
-                        <div class="mb-2"><strong>Área do problema:</strong> {{ problema.get_area_display }}</div>
-                        <div><strong>Local do problema:</strong> {{ problema.localizacao }}</div>
-                    </div>
-                    <div class="flex justify-between items-center space-x-4">
-                        <a href="{% url 'app:detalhe_problema' problema.id %}" class="w-1/2 text-center border-2 border-white/80 font-semibold py-2 px-4 rounded-full text-sm hover:bg-white hover:text-[#4C9A50] transition">
-                            Detalhar
-                        </a>
-                        <a href="{% url 'app:submeter_ideia' %}?problema={{ problema.id }}" class="w-1/2 text-center bg-white text-[#4C9A50] font-bold py-2 px-4 rounded-full text-sm hover:bg-gray-200 transition">Propor Ideia</a>
-                    </div>
-                </div>
+                <span class="text-xs text-gray-500 font-medium">{{ problema.autor.username }}</span>
             </div>
-            {% empty %}
-            <p class="col-span-3 text-center text-lg">Nenhum problema encontrado para esta área.</p>
-            {% endfor %}
+            
+            <a href="{% url 'app:submeter_ideia' %}?problema={{ problema.id }}" class="text-xs font-bold text-[#2F7E32] hover:bg-green-100 px-3 py-1.5 rounded-lg transition-colors">
+                Resolver
+            </a>
         </div>
     </div>
+    {% empty %}
+    <div class="col-span-full py-16 flex flex-col items-center justify-center text-center bg-white rounded-3xl border-2 border-dashed border-gray-200">
+        <div class="bg-green-50 p-4 rounded-full mb-4">
+            <svg class="h-10 w-10 text-[#2F7E32]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+        </div>
+        <h3 class="text-lg font-bold text-gray-900">Tudo certo por aqui!</h3>
+        <p class="mt-2 text-gray-500">Nenhum problema reportado no momento.</p>
+    </div>
+    {% endfor %}
 </div>
 {% endblock %}

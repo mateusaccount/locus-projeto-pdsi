@@ -1,43 +1,156 @@
 {% extends 'base.html' %}
 {% load static %}
-
-{% block title %}Relatar um Novo Problema - Locus{% endblock %}
-
-{% block extra_css %}
-    <style>
-        select option {
-            color: black;
-        }
-    </style>
-{% endblock %}
+{% block title %}Relatar Problema - Locus{% endblock %}
 
 {% block content %}
-<div class="bg-[#2F7E32] text-white min-h-screen px-4 sm:px-6 lg:px-8 py-12">
-    <div class="max-w-3xl mx-auto">
+<div class="max-w-4xl mx-auto mb-12">
+    
+    <div class="bg-gradient-to-br from-red-700 to-red-900 rounded-t-3xl p-8 md:p-12 relative overflow-hidden shadow-lg">
+        <div class="absolute top-0 right-0 -mt-10 -mr-10 w-40 h-40 bg-white opacity-10 rounded-full blur-2xl"></div>
+        <div class="absolute bottom-0 left-0 -mb-10 -ml-10 w-40 h-40 bg-white opacity-10 rounded-full blur-2xl"></div>
         
-        <div class="mb-6">
-            <a href="{% url 'app:lista_problemas' %}" class="text-sm text-white/80 hover:text-white hover:underline">&larr; Voltar para a lista de problemas</a>
+        <div class="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+            <div>
+                <span class="inline-block py-1 px-3 rounded-full bg-red-900/50 border border-red-400/30 text-red-50 text-xs font-bold tracking-wide uppercase mb-3">
+                    Relato de Ocorrência
+                </span>
+                <h1 class="text-3xl md:text-4xl font-bold text-white tracking-tight">Relatar um Problema</h1>
+                <p class="text-red-100 mt-3 text-lg font-light max-w-xl">
+                    Ajude-nos a manter o campus funcionando bem. Descreva o problema, a localização e anexe fotos se possível.
+                </p>
+            </div>
+            <div class="hidden md:flex bg-white/20 backdrop-blur-sm p-5 rounded-2xl border border-white/20 shadow-inner">
+                <svg class="w-12 h-12 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+            </div>
         </div>
-        
-        <h1 class="text-5xl font-bold">Relatar um Novo Problema</h1>
-        <p class="text-lg opacity-80 mt-2 mb-10">Viu algo que precisa de uma solução? Descreva-o Abaixo</p>
-        
-        <form method="post">
+    </div>
+
+    <div class="bg-white rounded-b-3xl shadow-xl border-x border-b border-gray-100 p-8 md:p-12">
+        <form method="post" enctype="multipart/form-data" class="space-y-8">
             {% csrf_token %}
             
-            <div class="space-y-6">
-                {{ form.titulo }}
-                {{ form.descricao }}
-                {{ form.area }}
-                {{ form.localizacao }}
+            {% if form.non_field_errors %}
+                <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" /></svg>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm text-red-700 font-medium">{{ form.non_field_errors.0 }}</p>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            <div>
+                <label for="{{ form.titulo.id_for_label }}" class="block text-sm font-bold text-gray-700 mb-2">
+                    Resumo do Problema <span class="text-red-500">*</span>
+                </label>
+                <div class="relative">
+                    {{ form.titulo }}
+                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-gray-400">
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                    </div>
+                </div>
+                {% if form.titulo.errors %}<p class="mt-2 text-sm text-red-600">{{ form.titulo.errors.0 }}</p>{% endif %}
             </div>
 
-            <div class="mt-8 text-center">
-                <button type="submit" class="border-2 border-white font-bold py-3 px-12 rounded-full text-lg hover:bg-white hover:text-[#2F7E32] transition">
-                    Publicar Problema
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {% for field in form %}
+                    {% if field.name != 'titulo' and field.name != 'descricao' and field.name != 'imagem' %}
+                    <div>
+                        <label for="{{ field.id_for_label }}" class="block text-sm font-bold text-gray-700 mb-2">
+                            {{ field.label }}
+                        </label>
+                        <div class="relative">
+                            {{ field }}
+                            {% if 'local' in field.name|lower %}
+                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-gray-400">
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% if field.errors %}<p class="mt-2 text-sm text-red-600">{{ field.errors.0 }}</p>{% endif %}
+                    </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+            <div>
+                <label for="{{ form.descricao.id_for_label }}" class="block text-sm font-bold text-gray-700 mb-2">
+                    Detalhes da Situação <span class="text-red-500">*</span>
+                </label>
+                <div class="mt-1">
+                    {{ form.descricao }}
+                </div>
+                <p class="mt-2 text-sm text-gray-500">Descreva o que aconteceu, quando percebeu e qualquer outro detalhe relevante.</p>
+                {% if form.descricao.errors %}<p class="mt-2 text-sm text-red-600">{{ form.descricao.errors.0 }}</p>{% endif %}
+            </div>
+
+            {% if form.imagem %}
+            <div class="pt-4 border-t border-gray-100">
+                <label class="block text-sm font-bold text-gray-700 mb-4">Evidência / Foto (Opcional)</label>
+                <div class="flex items-center justify-center w-full">
+                    <label for="{{ form.imagem.id_for_label }}" class="flex flex-col items-center justify-center w-full h-48 border-2 border-gray-300 border-dashed rounded-2xl cursor-pointer bg-gray-50 hover:bg-red-50 hover:border-red-500 transition-all group">
+                        <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                            <svg class="w-10 h-10 mb-3 text-gray-400 group-hover:text-red-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                            <p class="mb-2 text-sm text-gray-500"><span class="font-semibold text-red-600">Clique para enviar</span> ou arraste</p>
+                            <p class="text-xs text-gray-500">JPG, PNG (Max. 5MB)</p>
+                        </div>
+                        {{ form.imagem }}
+                    </label>
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="flex items-center justify-end gap-4 pt-6 border-t border-gray-100">
+                <a href="{% url 'app:lista_problemas' %}" class="px-6 py-3 rounded-full text-sm font-bold text-gray-500 hover:text-gray-800 hover:bg-gray-100 transition-all">
+                    Cancelar
+                </a>
+                <button type="submit" class="inline-flex items-center px-8 py-3 border border-transparent text-sm font-bold rounded-full shadow-lg shadow-red-900/20 text-white bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-600 transition-all transform hover:-translate-y-0.5">
+                    <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                    Enviar Relato
                 </button>
             </div>
         </form>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const inputs = document.querySelectorAll('input[type="text"], input[type="email"], select, textarea');
+        
+        inputs.forEach(input => {
+            input.className = ''; 
+            input.classList.add(
+                'block', 'w-full', 'px-5', 'py-4', 
+                'text-gray-900', 'bg-gray-50',
+                'border', 'border-gray-200', 'rounded-xl', 
+                'placeholder-gray-400',
+                'focus:bg-white', 'focus:outline-none', 'focus:ring-2', 'focus:ring-red-500', 'focus:border-transparent', // Ring vermelho para alerta
+                'transition-all', 'text-base', 'shadow-sm'
+            );
+
+            if (input.tagName === 'TEXTAREA') {
+                input.rows = 6;
+                input.classList.add('resize-y');
+            }
+        });
+
+        // Script de Upload (Igual ao de ideias, mas com cores vermelhas no hover)
+        const fileInput = document.querySelector('input[type="file"]');
+        if (fileInput) {
+            fileInput.classList.add('hidden');
+            fileInput.addEventListener('change', function() {
+                const fileName = this.files[0] ? this.files[0].name : 'Nenhum arquivo selecionado';
+                const labelText = this.parentElement.querySelector('p.mb-2');
+                if(labelText) labelText.innerHTML = `<span class="font-semibold text-red-600">Arquivo pronto:</span> ${fileName}`;
+            });
+        }
+    });
+</script>
 {% endblock %}

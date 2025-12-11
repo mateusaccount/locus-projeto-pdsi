@@ -6,7 +6,8 @@ app_name = 'app'
 
 urlpatterns = [
     # Rotas do App
-    path('', views.lista_ideias, name='lista_ideias'),
+    path('', views.dashboard, name='dashboard'),
+    path('ideias/', views.lista_ideias, name='lista_ideias'),
     path('ideia/<int:ideia_id>/', views.detalhe_ideia, name='detalhe_ideia'),
     path('submeter/', views.submeter_ideia, name='submeter_ideia'),
     path('ideia/<int:ideia_id>/votar/<str:tipo_voto>/', views.votar_ideia, name='votar_ideia'),
@@ -56,4 +57,6 @@ urlpatterns = [
     path('reset/done/', auth_views.PasswordResetCompleteView.as_view(
         template_name='registration/recuperacao_senha_completa.html'
     ), name='password_reset_complete'),
+
+    path('perfil/editar/', views.editar_perfil, name='editar_perfil'),
 ]

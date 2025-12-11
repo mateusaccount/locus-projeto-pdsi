@@ -1,120 +1,117 @@
 {% extends 'base.html' %}
 {% load static %}
-
 {% block title %}Dashboard - Locus{% endblock %}
 
 {% block content %}
-<div class="bg-[#2F7E32] text-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-16">
-        
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-            
-            <div>
-                <h1 class="text-4xl lg:text-5xl font-bold leading-tight mb-4">Compartilhe suas ideias e ajude a melhorar nossa escola!</h1>
-                <p class="text-base lg:text-lg opacity-90 mb-8">Proponha soluções, comente e vote nas melhores propostas — colaboração que gera mudanças reais.</p>
-                
-                <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
-                    <a href="{% url 'app:submeter_ideia' %}" class="bg-white text-[#2F7E32] font-bold py-3 px-8 rounded-full text-lg text-center hover:bg-gray-200 transition">Propor Ideias</a>
-                    <a href="{% url 'app:relatar_problema' %}" class="border-2 border-white font-bold py-3 px-8 rounded-full text-lg text-center hover:bg-white hover:text-[#2F7E32] transition">Relatar Problemas</a>
-                </div>
-            </div>
-
-            <div id="problem-carousel" class="relative mt-8 lg:mt-0">
-                <div class="relative h-full min-h-[280px]">
-                    {% for problema in problemas_carousel %}
-                    <div class="problem-slide absolute inset-0 transition-opacity duration-500 ease-in-out opacity-0" data-index="{{ forloop.counter0 }}">
-                        <div class="bg-[#4C9A50] p-6 rounded-2xl shadow-lg h-full flex flex-col justify-between">
-                            <div>
-                                <div class="flex justify-between items-start mb-4">
-                                    <h3 class="text-xl sm:text-2xl font-bold">{{ problema.titulo }}</h3>
-                                    <span class="bg-white/20 text-white font-bold text-sm py-1 px-3 rounded-full flex items-center gap-1">
-                                        ▲ <span>{{ problema.ideia_set.count }}</span>
-                                    </span>
-                                </div>
-                                <p class="text-sm opacity-80 h-24 overflow-hidden">{{ problema.descricao|truncatewords:25 }}</p>
-                            </div>
-                            <div class="flex flex-col space-y-2 sm:space-y-0 sm:flex-row justify-between items-start sm:items-center mt-6">
-                                <div class="text-xs">
-                                    <div class="mb-2"><strong>Área:</strong> {{ problema.get_area_display }}</div>
-                                    <div><strong>Local:</strong> {{ problema.localizacao }}</div>
-                                </div>
-                                <a href="{% url 'app:submeter_ideia' %}?problema={{ problema.id }}" class="bg-white text-[#4C9A50] font-bold py-2 px-6 rounded-full hover:bg-gray-200 transition w-full sm:w-auto text-center">Propor Ideia</a>
-                            </div>
-                        </div>
-                    </div>
-                    {% empty %}
-                    <p class="text-center bg-[#4C9A50] p-6 rounded-2xl shadow-lg">Nenhum problema cadastrado para exibir no momento.</p>
-                    {% endfor %}
-                </div>
-                
-                {% if problemas_carousel|length > 1 %}
-                <button id="prev-btn" class="absolute top-1/2 left-0 transform -translate-y-1/2 bg-white/30 text-white rounded-full w-8 h-8 lg:w-10 lg:h-10 flex items-center justify-center hover:bg-white/50 transition-colors z-10 ml-1">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 lg:h-6 lg:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
-                </button>
-                <button id="next-btn" class="absolute top-1/2 right-0 transform -translate-y-1/2 bg-white/30 text-white rounded-full w-8 h-8 lg:w-10 lg:h-10 flex items-center justify-center hover:bg-white/50 transition-colors z-10 mr-1">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 lg:h-6 lg:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
-                </button>
-                {% endif %}
-            </div>
+<div class="bg-white rounded-3xl p-8 md:p-12 shadow-sm border border-gray-100 mb-12 flex flex-col md:flex-row items-center justify-between gap-10">
+    <div class="max-w-2xl">
+        <span class="inline-block py-1 px-3 rounded-full bg-green-50 text-[#2F7E32] text-xs font-bold tracking-wide uppercase mb-4">Bem-vindo ao Locus</span>
+        <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6 tracking-tight">Transforme nossa escola com suas ideias.</h1>
+        <p class="text-lg text-gray-600 mb-8 leading-relaxed">
+            Sua voz tem poder. Identifique problemas, proponha soluções criativas e colabore com outros alunos para construir um IFRN melhor.
+        </p>
+        <div class="flex flex-wrap gap-4">
+            <a href="{% url 'app:submeter_ideia' %}" class="px-8 py-3.5 bg-[#2F7E32] text-white font-semibold rounded-full hover:bg-[#266e29] shadow-lg shadow-green-900/20 transition-all transform hover:-translate-y-1">
+                + Nova Ideia
+            </a>
+            <a href="{% url 'app:relatar_problema' %}" class="px-8 py-3.5 bg-white text-gray-700 border border-gray-200 font-semibold rounded-full hover:bg-gray-50 hover:border-gray-300 transition-all">
+                ! Relatar Problema
+            </a>
         </div>
-
-        <div class="mt-16 lg:mt-20">
-            <h2 class="text-2xl sm:text-3xl font-bold mb-6 lg:mb-8">Ideias em Destaque</h2>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-                {% for ideia in ideias_destaque %}
-                <div class="bg-[#4C9A50] p-6 rounded-2xl shadow-lg">
-                    <div class="flex justify-between items-start mb-2">
-                        <h4 class="text-xl font-bold">{{ ideia.titulo }}</h4>
-                        <span class="text-sm font-bold">☐ {{ ideia.pontuacao }}</span>
-                    </div>
-                    <p class="text-xs opacity-80 mb-4">Problema: {{ ideia.problema_alvo.titulo|default:"Não especificado" }}</p>
-                    <p class="text-sm opacity-90 h-20 overflow-hidden mb-6">{{ ideia.descricao|truncatewords:20 }}</p>
-                    
-                    <div class="flex flex-col space-y-2 sm:space-y-0 sm:flex-row sm:space-x-4">
-                        <a href="{% url 'app:detalhe_ideia' ideia.id %}" class="w-full sm:w-1/2 text-center border-2 border-white font-bold py-2 px-4 rounded-full hover:bg-white hover:text-[#4C9A50] transition">Ver Detalhes</a>
-                        <a href="{% url 'app:detalhe_ideia' ideia.id %}" class="w-full sm:w-1/2 text-center border-2 border-white font-bold py-2 px-4 rounded-full hover:bg-white hover:text-[#4C9A50] transition">Votar</a>
-                    </div>
-                </div>
-                {% empty %}
-                <p class="col-span-full">Nenhuma ideia em destaque no momento.</p>
-                {% endfor %}
-            </div>
-        </div>
+    </div>
+    <div class="hidden lg:block relative w-80 h-80 bg-gradient-to-tr from-green-50 to-emerald-100 rounded-full flex items-center justify-center">
+        <div class="text-9xl">💡</div>
     </div>
 </div>
 
-<script>
-    const slides = document.querySelectorAll('.problem-slide');
-    const prevBtn = document.getElementById('prev-btn');
-    const nextBtn = document.getElementById('next-btn');
-    let currentIndex = 0;
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
     
-    function showSlide(index) {
-        if (!slides.length) return;
-        slides.forEach((slide, i) => { 
-            if (i === index) { 
-                slide.classList.remove('opacity-0'); 
-            } else { 
-                slide.classList.add('opacity-0'); 
-            } 
-        });
-        if(slides.length > 0) {
-            const firstSlide = document.querySelector('.problem-slide[data-index="0"]');
-            if(firstSlide && document.querySelectorAll('.problem-slide.opacity-0').length === slides.length) {
-                firstSlide.classList.remove('opacity-0');
-            }
-        }
-    }
+    <div class="lg:col-span-1">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-bold text-gray-900">Problemas Recentes</h2>
+            <a href="{% url 'app:lista_problemas' %}" class="text-sm font-medium text-[#2F7E32] hover:underline">Ver todos</a>
+        </div>
+        
+        <div class="space-y-4">
+            {% for problema in problemas_carousel %}
+            <div class="group bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-all">
+                <div class="flex justify-between items-start mb-3">
+                    <span class="px-2 py-1 bg-red-50 text-red-600 text-xs font-bold rounded-lg uppercase">Problema</span>
+                    <span class="text-xs text-gray-400">{{ problema.data_criacao|date:"d M" }}</span>
+                </div>
+                <h3 class="font-bold text-gray-800 mb-2 group-hover:text-[#2F7E32] transition-colors">{{ problema.titulo }}</h3>
+                <p class="text-sm text-gray-500 line-clamp-2 mb-4">{{ problema.descricao }}</p>
+                <div class="flex items-center justify-between border-t border-gray-50 pt-3">
+                    <div class="text-xs text-gray-400 flex items-center gap-1">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        {{ problema.localizacao|default:"Geral" }}
+                    </div>
+                    <a href="{% url 'app:submeter_ideia' %}?problema={{ problema.id }}" class="text-xs font-bold text-[#2F7E32] hover:bg-green-50 px-3 py-1.5 rounded-lg transition-colors">
+                        Sugerir Solução &rarr;
+                    </a>
+                </div>
+            </div>
+            {% empty %}
+            <div class="bg-gray-50 border border-dashed border-gray-300 rounded-2xl p-8 text-center">
+                <p class="text-gray-500">Tudo tranquilo! Nenhum problema reportado recentemente.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
 
-    if (slides.length > 1 && prevBtn && nextBtn) {
-        prevBtn.addEventListener('click', () => { currentIndex = (currentIndex > 0) ? currentIndex - 1 : slides.length - 1; showSlide(currentIndex); });
-        nextBtn.addEventListener('click', () => { currentIndex = (currentIndex < slides.length - 1) ? currentIndex + 1 : 0; showSlide(currentIndex); });
-    } else if (prevBtn && nextBtn) {
-        prevBtn.style.display = 'none';
-        nextBtn.style.display = 'none';
-    }
-    
-    showSlide(currentIndex);
-</script>
+    <div class="lg:col-span-2">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-bold text-gray-900">Ideias em Destaque</h2>
+            <a href="{% url 'app:lista_ideias' %}" class="text-sm font-medium text-[#2F7E32] hover:underline">Ver todas</a>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {% for ideia in ideias_destaque %}
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-all flex flex-col h-full">
+                <div class="p-6 flex-grow">
+                    <div class="flex items-center gap-2 mb-4">
+                        <div class="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center text-[#2F7E32] font-bold text-xs">
+                            {{ ideia.autor.username|slice:":1"|upper }}
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-gray-900">{{ ideia.autor.username }}</p>
+                            <p class="text-[10px] text-gray-400">Autor</p>
+                        </div>
+                        <div class="ml-auto bg-gray-50 text-gray-600 px-2 py-1 rounded text-xs font-bold">
+                            ★ {{ ideia.pontuacao }} pts
+                        </div>
+                    </div>
+                    
+                    <a href="{% url 'app:detalhe_ideia' ideia.id %}" class="block">
+                        <h3 class="text-lg font-bold text-gray-800 mb-2 hover:text-[#2F7E32] transition-colors leading-tight">
+                            {{ ideia.titulo }}
+                        </h3>
+                    </a>
+                    
+                    {% if ideia.problema_alvo %}
+                    <div class="mb-3 inline-flex items-center gap-1 px-2 py-0.5 rounded bg-red-50 text-red-600 text-[10px] font-medium">
+                        <span>Resolvendo:</span>
+                        <span class="truncate max-w-[150px]">{{ ideia.problema_alvo.titulo }}</span>
+                    </div>
+                    {% endif %}
+                    
+                    <p class="text-sm text-gray-500 line-clamp-3">{{ ideia.descricao }}</p>
+                </div>
+                
+                <div class="bg-gray-50 px-6 py-4 border-t border-gray-100 flex items-center justify-between">
+                    <span class="text-xs text-gray-400">{{ ideia.data_criacao|timesince }} atrás</span>
+                    <a href="{% url 'app:detalhe_ideia' ideia.id %}" class="text-sm font-bold text-[#2F7E32] hover:text-green-700">
+                        Votar e Comentar
+                    </a>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-span-2 bg-gray-50 border border-dashed border-gray-300 rounded-2xl p-12 text-center">
+                <p class="text-gray-500 mb-4">Nenhuma ideia em destaque ainda.</p>
+                <a href="{% url 'app:submeter_ideia' %}" class="text-[#2F7E32] font-bold hover:underline">Seja o primeiro a inovar!</a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
 {% endblock %}

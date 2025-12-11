@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, User 
 from .models import Ideia, CustomUsuario, Problema, Comentario
 
 class IdeiaForm(forms.ModelForm):
@@ -92,12 +92,12 @@ class ProblemaForm(forms.ModelForm):
 class ComentarioForm(forms.ModelForm):
     class Meta:
         model = Comentario
-        fields = ['conteudo']
+        fields = ['texto']
         labels = {
-            'conteudo': ''
+            'texto': ''
         }
         widgets = {
-            'conteudo': forms.Textarea(attrs={
+            'texto': forms.Textarea(attrs={
                 'rows': 4,
                 'placeholder': 'Escreva seu comentário aqui...',
                 'class': 'w-full bg-white/10 border-2 border-white/30 rounded-xl p-4 text-white placeholder-white/70 focus:ring-2 focus:ring-white focus:bg-white/20 transition'
@@ -111,3 +111,14 @@ class CustomLoginForm(AuthenticationForm):
         self.fields['username'].label = ''
         self.fields['password'].widget.attrs['placeholder'] = 'Senha'
         self.fields['password'].label = ''
+
+class EditarPerfilForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'email', 'username']
+        labels = {
+            'first_name': 'Nome',
+            'last_name': 'Sobrenome',
+            'email': 'E-mail',
+            'username': 'Nome de Usuário'
+        }

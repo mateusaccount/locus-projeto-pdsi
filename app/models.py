@@ -27,6 +27,10 @@ class Problema(models.Model):
     descricao = models.TextField()
     area = models.CharField(max_length=50, choices=AREA_CHOICES)
     localizacao = models.CharField(max_length=255, help_text="Ex: Bairro, Cidade, Campus")
+    
+    # ADICIONADO: Campo de imagem para as evidências
+    imagem = models.ImageField(upload_to='problemas/', blank=True, null=True)
+    
     autor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
     usuarios_que_reportaram = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
@@ -52,6 +56,10 @@ class Ideia(models.Model):
     ]
     titulo = models.CharField(max_length=200)
     descricao = models.TextField()
+    
+    # ADICIONADO: Campo de imagem para ilustrar a ideia
+    imagem = models.ImageField(upload_to='ideias/', blank=True, null=True)
+    
     autor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     problema_alvo = models.ForeignKey(
         Problema,
@@ -68,8 +76,9 @@ class Ideia(models.Model):
         blank=True
     )
 
+    # Propriedade calculada para exibir no template como {{ ideia.pontuacao }}
     @property
-    def pontuacao_total(self):
+    def pontuacao(self):
         upvotes = self.votos.filter(tipo='upvote').count()
         downvotes = self.votos.filter(tipo='downvote').count()
         return upvotes - downvotes
@@ -85,7 +94,7 @@ class Ideia(models.Model):
 class Comentario(models.Model):
     ideia = models.ForeignKey(Ideia, related_name='comentarios', on_delete=models.CASCADE)
     autor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    conteudo = models.TextField()
+    texto = models.TextField() 
     data_criacao = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -102,6 +111,7 @@ class Votacao(models.Model):
     tipo = models.CharField(max_length=10, choices=TIPO_VOTO_CHOICES)
 
     class Meta:
+        # Garante que um usuário só pode votar uma vez por ideia
         unique_together = ('ideia', 'usuario')
 
     def __str__(self):
