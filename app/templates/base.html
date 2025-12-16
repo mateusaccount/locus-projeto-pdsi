@@ -22,7 +22,7 @@
                 
                 <div class="flex items-center gap-8">
                     <a href="{% if user.is_authenticated %}{% url 'app:dashboard' %}{% else %}{% url 'app:lista_ideias' %}{% endif %}" class="flex-shrink-0 group">
-                        <img style="height: 42px;" src="{% static 'images/logo.png' %}" alt="Locus" class="transition-transform transform group-hover:scale-105">
+                        <img style="height: 80px;" src="{% static 'images/logoverde.png' %}" alt="Locus" class="transition-transform transform group-hover:scale-105">
                     </a>
                     
                     <div class="hidden md:flex space-x-1">
