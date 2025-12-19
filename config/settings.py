@@ -138,3 +138,20 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'mercyzo33gln@gmail.com'
 EMAIL_HOST_PASSWORD = 'mlbmkxufqearghso'
+
+
+
+from django.core.mail import send_mail
+from django.conf import settings
+
+try:
+    send_mail(
+        'Teste PythonAnywhere',
+        'Se você está lendo isso, o envio funciona!',
+        settings.EMAIL_HOST_USER,
+        ['mercyzo33gln@gmail.com'],
+        fail_silently=False,
+    )
+    print("SUCESSO! O e-mail foi enviado.")
+except Exception as e:
+    print(f"ERRO: {e}")
