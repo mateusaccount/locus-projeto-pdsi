@@ -75,4 +75,6 @@ urlpatterns = [
     
     # Rota de Delete (Mantenha ou verifique se está igual)
     path('gestao-interna/delete/<str:tipo>/<int:id_item>/', views.admin_delete, name='admin_delete'),
+
+    path('ideia/<int:ideia_id>/comentar-ajax/', views.adicionar_comentario_ajax, name='adicionar_comentario_ajax'),
 ]

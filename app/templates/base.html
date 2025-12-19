@@ -11,6 +11,13 @@
         body { font-family: 'Inter', sans-serif; }
         .footer-link { position: relative; display: inline-block; transition: all 0.2s; }
         .footer-link:hover { padding-left: 4px; color: #052e16; font-weight: 600; }
+        @keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in-down {
+    animation: fadeInDown 0.5s ease-out forwards;
+}
     </style>
     {% block extra_css %}{% endblock %}
 </head>
@@ -248,6 +255,161 @@
                 }
             });
         }
+        function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    function votarAjax(ideiaId, tipo, btnElement) {
+        const url = `/ideia/${ideiaId}/votar/${tipo}/`;
+        const csrftoken = getCookie('csrftoken');
+
+        // Feedback visual imediato (opcional: diminui a opacidade enquanto carrega)
+        btnElement.style.opacity = '0.7';
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrftoken,
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => {
+            if (response.status === 401) {
+                window.location.href = "{% url 'app:login' %}";
+                return;
+            }
+            return response.json();
+        })
+        .then(data => {
+            btnElement.style.opacity = '1';
+            
+            if (data.status === 'ok') {
+                // Atualiza os números na tela
+                const spanUp = document.getElementById(`count-up-${ideiaId}`);
+                const spanDown = document.getElementById(`count-down-${ideiaId}`);
+                
+                if(spanUp) spanUp.textContent = data.total_upvotes;
+                if(spanDown) spanDown.textContent = data.total_downvotes;
+
+                // Atualiza as cores dos botões
+                atualizarBotoes(ideiaId, data.voto_usuario);
+            }
+        })
+        .catch(error => console.error('Erro:', error));
+    }
+
+    function atualizarBotoes(ideiaId, estado) {
+        // Pega os botões pelo ID específico
+        const btnUp = document.getElementById(`btn-up-${ideiaId}`);
+        const btnDown = document.getElementById(`btn-down-${ideiaId}`);
+
+        // Classes para Verde (Upvote)
+        const greenFilled = ['bg-[#2F7E32]', 'text-white', 'border-[#2F7E32]', 'shadow-md'];
+        const greenOutline = ['bg-green-50', 'text-[#2F7E32]', 'border-green-100'];
+
+        // Classes para Vermelho (Downvote)
+        const redFilled = ['bg-red-600', 'text-white', 'border-red-600', 'shadow-md'];
+        const redOutline = ['bg-gray-50', 'text-gray-500', 'border-gray-100'];
+
+        // Reseta ambos para o estado "Outline" (Vazio)
+        if(btnUp) {
+            btnUp.classList.remove(...greenFilled);
+            btnUp.classList.add(...greenOutline);
+        }
+        if(btnDown) {
+            btnDown.classList.remove(...redFilled);
+            btnDown.classList.add(...redOutline);
+        }
+
+        // Aplica o estilo preenchido dependendo do estado atual
+        if (estado === 'upvote' && btnUp) {
+            btnUp.classList.remove(...greenOutline);
+            btnUp.classList.add(...greenFilled);
+        } else if (estado === 'downvote' && btnDown) {
+            btnDown.classList.remove(...redOutline);
+            btnDown.classList.add(...redFilled);
+        }
+    }
+    function enviarComentarioAjax(event, ideiaId) {
+        event.preventDefault(); // Impede o recarregamento
+        
+        const form = event.target;
+        const textarea = form.querySelector('textarea[name="texto_comentario"]');
+        const texto = textarea.value;
+        const url = `/ideia/${ideiaId}/comentar-ajax/`;
+        const csrftoken = getCookie('csrftoken');
+        const btnSubmit = form.querySelector('button[type="submit"]');
+
+        if (!texto.trim()) return; // Não envia vazio
+
+        // Feedback visual (desabilita botão)
+        btnSubmit.disabled = true;
+        btnSubmit.style.opacity = '0.7';
+
+        const formData = new FormData();
+        formData.append('texto_comentario', texto);
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrftoken,
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'ok') {
+                // 1. Limpa o campo
+                textarea.value = '';
+                btnSubmit.disabled = false;
+                btnSubmit.style.opacity = '1';
+
+                // 2. Atualiza o contador
+                const contador = document.getElementById('contador-comentarios');
+                if(contador) contador.textContent = data.total_comentarios;
+
+                // 3. Remove mensagem de "Seja o primeiro" se existir
+                const vazio = document.getElementById('comentarios-vazio');
+                if(vazio) vazio.remove();
+
+                // 4. Cria o HTML do novo comentário
+                const htmlNovoComentario = `
+                    <div class="flex gap-4 group animate-fade-in-down">
+                        <div class="h-10 w-10 rounded-full bg-white border border-gray-200 flex-shrink-0 flex items-center justify-center font-bold text-gray-600 shadow-sm">
+                            ${data.autor_inicial}
+                        </div>
+                        <div class="bg-white p-4 rounded-2xl rounded-tl-none shadow-sm border border-gray-100 flex-grow group-hover:border-green-200 transition-colors border-l-4 border-l-[#2F7E32]">
+                            <div class="flex justify-between items-center mb-2">
+                                <h4 class="font-bold text-gray-900 text-sm">${data.autor_nome}</h4>
+                                <span class="text-xs text-green-600 font-bold">Novo!</span>
+                            </div>
+                            <p class="text-gray-700 text-sm leading-relaxed">${data.texto}</p>
+                        </div>
+                    </div>
+                `;
+
+                // 5. Insere no topo da lista
+                const lista = document.getElementById('lista-comentarios');
+                lista.insertAdjacentHTML('afterbegin', htmlNovoComentario);
+            }
+        })
+        .catch(error => {
+            console.error('Erro:', error);
+            btnSubmit.disabled = false;
+        });
+    }
     </script>
 </body>
 </html>

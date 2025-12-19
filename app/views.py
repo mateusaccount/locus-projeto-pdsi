@@ -89,34 +89,43 @@ def submeter_ideia(request):
     }
     return render(request, 'submeter_ideia.html', contexto)
 
-@login_required
 def votar_ideia(request, ideia_id, tipo_voto):
+    if not request.user.is_authenticated:
+        # Se for AJAX e não estiver logado, retorna erro 401
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({'error': 'Login necessário'}, status=401)
+        return redirect('app:login')
+
     if request.method == 'POST':
         ideia = get_object_or_404(Ideia, id=ideia_id)
-        
-        # Converte o parametro da URL para o valor do banco
         tipo_modelo = 'upvote' if tipo_voto == 'cima' else 'downvote'
         
-        # Busca voto existente
         voto_existente = Votacao.objects.filter(usuario=request.user, ideia=ideia).first()
         
+        # Lógica de Voto (Toggle/Switch)
         if voto_existente:
             if voto_existente.tipo == tipo_modelo:
-                # Se clicou no MESMO botão que já tinha votado -> Remove o voto (Toggle)
                 voto_existente.delete()
+                estado_atual = 'nenhum'
             else:
-                # Se clicou no OUTRO botão -> Atualiza o voto (Switch)
                 voto_existente.tipo = tipo_modelo
                 voto_existente.save()
+                estado_atual = tipo_modelo
         else:
-            # Se não tinha voto -> Cria novo
             Votacao.objects.create(usuario=request.user, ideia=ideia, tipo=tipo_modelo)
+            estado_atual = tipo_modelo
         
-        # Não precisamos salvar ideia.pontuacao aqui pois ela é calculada automaticamente (@property)
+        # SE FOR AJAX, Retorna JSON com os novos números
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({
+                'total_upvotes': ideia.total_upvotes,
+                'total_downvotes': ideia.total_downvotes,
+                'voto_usuario': estado_atual, # 'upvote', 'downvote' ou 'nenhum'
+                'status': 'ok'
+            })
         
-    # Redireciona de volta para a ideia (com âncora para não rolar a página pro topo, opcional)
+    # Fallback para navegação normal (sem JS)
     return redirect('app:detalhe_ideia', ideia_id=ideia_id)
-
 def cadastro(request):
     if request.method == 'POST':
         form = CadastroForm(request.POST)
@@ -392,3 +401,28 @@ def admin_delete(request, tipo, id_item):
     
     # Tenta voltar para a página anterior, se não der, vai pro painel
     return redirect(request.META.get('HTTP_REFERER', 'app:painel_admin'))
+
+@login_required
+def adicionar_comentario_ajax(request, ideia_id):
+    if request.method == 'POST' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        ideia = get_object_or_404(Ideia, id=ideia_id)
+        texto = request.POST.get('texto_comentario')
+        
+        if texto:
+            comentario = Comentario.objects.create(
+                ideia=ideia,
+                autor=request.user,
+                texto=texto
+            )
+            
+            # Retorna os dados prontos para o JavaScript montar o card
+            return JsonResponse({
+                'status': 'ok',
+                'autor_nome': request.user.first_name or request.user.username,
+                'autor_inicial': request.user.username[0].upper(),
+                'texto': comentario.texto,
+                'data': 'Agora mesmo', # Como acabou de criar, não precisamos calcular tempo
+                'total_comentarios': ideia.comentarios.count()
+            })
+            
+    return JsonResponse({'status': 'erro'}, status=400)
