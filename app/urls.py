@@ -39,25 +39,30 @@ urlpatterns = [
 
     # --- ROTAS DE RECUPERAÇÃO DE SENHA ATUALIZADAS ---
     path('password_reset/', auth_views.PasswordResetView.as_view(
-        template_name='registration/recuperacao_senha_form.html',
-        email_template_name='registration/recuperacao_senha_email.html',
-        subject_template_name='registration/recuperacao_senha_assunto.txt',
-        success_url=reverse_lazy('app:password_reset_done')
+        template_name='registration/password_reset_form.html',
+        email_template_name='registration/password_reset_email.html',
+        # AQUI ESTÁ A CORREÇÃO: Dizemos explicitamente para onde ir depois
+        success_url=reverse_lazy('app:password_reset_done') 
     ), name='password_reset'),
-    
+
+    # 2. Página de "E-mail Enviado" (Não precisa de mudança)
     path('password_reset/done/', auth_views.PasswordResetDoneView.as_view(
-        template_name='registration/recuperacao_senha_done.html'
+        template_name='registration/password_reset_done.html'
     ), name='password_reset_done'),
-    
+
+    # 3. Link que a pessoa clica no e-mail para digitar nova senha
     path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(
-        template_name='registration/recuperacao_senha_confirmada.html',
+        template_name='registration/password_reset_confirm.html',
+        # PREVENÇÃO DE ERRO: Já corrigimos o redirecionamento final aqui também
         success_url=reverse_lazy('app:password_reset_complete')
     ), name='password_reset_confirm'),
-    
+
+    # 4. Página de "Sucesso"
     path('reset/done/', auth_views.PasswordResetCompleteView.as_view(
-        template_name='registration/recuperacao_senha_completa.html'
+        template_name='registration/password_reset_complete.html'
     ), name='password_reset_complete'),
 
+    
     path('perfil/editar/', views.editar_perfil, name='editar_perfil'),
     path('api/live-search/', views.api_live_search, name='api_live_search'),
 ]
