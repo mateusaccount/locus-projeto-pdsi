@@ -1,0 +1,173 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ titulo }} - Admin Locus</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        function confirmarDelete(url) {
+            if (confirm("Tem certeza que deseja excluir permanentemente?")) {
+                window.location.href = url;
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-100 font-sans antialiased h-screen flex overflow-hidden">
+
+    <aside class="w-64 bg-slate-900 text-white flex flex-col flex-shrink-0">
+        <div class="h-20 flex items-center justify-center border-b border-slate-800">
+            <a href="{% url 'app:painel_admin' %}" class="text-xl font-bold tracking-wider text-green-400">LOCUS <span class="text-white font-light">ADMIN</span></a>
+        </div>
+
+        <nav class="flex-grow p-4 space-y-2 overflow-y-auto">
+            <a href="{% url 'app:painel_admin' %}" class="flex items-center gap-3 px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-800 rounded-xl transition-colors">
+                <span class="font-medium">Visão Geral</span>
+            </a>
+            
+            <p class="px-4 text-xs font-bold text-slate-500 uppercase mt-4 mb-2">Conteúdo</p>
+            
+            <a href="{% url 'app:admin_lista' 'ideias' %}" class="flex items-center gap-3 px-4 py-3 {% if categoria == 'ideias' %}bg-green-600 text-white shadow-lg shadow-green-900/20{% else %}text-slate-300 hover:bg-slate-800{% endif %} rounded-xl transition-colors">
+                💡 Ideias
+            </a>
+            <a href="{% url 'app:admin_lista' 'problemas' %}" class="flex items-center gap-3 px-4 py-3 {% if categoria == 'problemas' %}bg-red-600 text-white shadow-lg shadow-red-900/20{% else %}text-slate-300 hover:bg-slate-800{% endif %} rounded-xl transition-colors">
+                ⚠️ Problemas
+            </a>
+            <a href="{% url 'app:admin_lista' 'comentarios' %}" class="flex items-center gap-3 px-4 py-3 {% if categoria == 'comentarios' %}bg-purple-600 text-white shadow-lg shadow-purple-900/20{% else %}text-slate-300 hover:bg-slate-800{% endif %} rounded-xl transition-colors">
+                💬 Comentários
+            </a>
+
+            <p class="px-4 text-xs font-bold text-slate-500 uppercase mt-4 mb-2">Sistema</p>
+            
+            <a href="{% url 'app:admin_lista' 'usuarios' %}" class="flex items-center gap-3 px-4 py-3 {% if categoria == 'usuarios' %}bg-blue-600 text-white shadow-lg shadow-blue-900/20{% else %}text-slate-300 hover:bg-slate-800{% endif %} rounded-xl transition-colors">
+                👥 Usuários
+            </a>
+        </nav>
+    </aside>
+
+    <main class="flex-grow flex flex-col h-screen overflow-y-auto bg-gray-100">
+        
+        <header class="bg-white border-b border-gray-200 h-20 flex items-center justify-between px-8 sticky top-0 z-10">
+            <div class="flex items-center gap-4">
+                <h1 class="text-2xl font-bold text-gray-800">{{ titulo }}</h1>
+                <span class="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-xs font-bold">{{ items.count }} itens</span>
+            </div>
+            
+            {% if messages %}
+            <div class="absolute top-20 right-8 z-50">
+                {% for message in messages %}
+                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative shadow-lg mb-2">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </header>
+
+        <div class="p-8 max-w-7xl mx-auto w-full">
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left">
+                        
+                        <thead class="bg-gray-50 text-gray-500 font-medium border-b border-gray-200">
+                            <tr>
+                                {% if categoria == 'ideias' %}
+                                    <th class="px-6 py-4">Título</th>
+                                    <th class="px-6 py-4">Autor</th>
+                                    <th class="px-6 py-4">Votos</th>
+                                    <th class="px-6 py-4">Data</th>
+                                {% elif categoria == 'problemas' %}
+                                    <th class="px-6 py-4">Título</th>
+                                    <th class="px-6 py-4">Local</th>
+                                    <th class="px-6 py-4">Autor</th>
+                                    <th class="px-6 py-4">Data</th>
+                                {% elif categoria == 'comentarios' %}
+                                    <th class="px-6 py-4 w-1/2">Comentário</th>
+                                    <th class="px-6 py-4">Autor</th>
+                                    <th class="px-6 py-4">Onde</th>
+                                    <th class="px-6 py-4">Data</th>
+                                {% elif categoria == 'usuarios' %}
+                                    <th class="px-6 py-4">Usuário</th>
+                                    <th class="px-6 py-4">E-mail</th>
+                                    <th class="px-6 py-4">Status</th>
+                                {% endif %}
+                                <th class="px-6 py-4 text-right">Ações</th>
+                            </tr>
+                        </thead>
+
+                        <tbody class="divide-y divide-gray-100">
+                            {% for item in items %}
+                            <tr class="hover:bg-gray-50 transition-colors">
+                                
+                                {% if categoria == 'ideias' %}
+                                    <td class="px-6 py-4 font-bold text-gray-900">{{ item.titulo }}</td>
+                                    <td class="px-6 py-4 text-gray-500">{{ item.autor.username }}</td>
+                                    <td class="px-6 py-4">
+                                        <span class="text-green-600 font-bold">👍 {{ item.total_upvotes }}</span>
+                                        <span class="text-gray-300 mx-1">|</span>
+                                        <span class="text-red-500 font-bold">👎 {{ item.total_downvotes }}</span>
+                                    </td>
+                                    <td class="px-6 py-4 text-gray-400 text-xs">{{ item.data_criacao|date:"d/m/Y" }}</td>
+                                    <td class="px-6 py-4 text-right">
+                                        <a href="{% url 'app:detalhe_ideia' item.id %}" target="_blank" class="text-blue-500 hover:underline mr-3">Ver</a>
+                                        <button onclick="confirmarDelete('{% url 'app:admin_delete' 'ideia' item.id %}')" class="text-red-500 hover:text-red-700 font-bold hover:underline">Excluir</button>
+                                    </td>
+
+                                {% elif categoria == 'problemas' %}
+                                    <td class="px-6 py-4 font-bold text-gray-900">{{ item.titulo }}</td>
+                                    <td class="px-6 py-4 text-gray-500">{{ item.localizacao }}</td>
+                                    <td class="px-6 py-4 text-gray-500">{{ item.autor.username }}</td>
+                                    <td class="px-6 py-4 text-gray-400 text-xs">{{ item.data_criacao|date:"d/m/Y" }}</td>
+                                    <td class="px-6 py-4 text-right">
+                                        <a href="{% url 'app:detalhe_problema' item.id %}" target="_blank" class="text-blue-500 hover:underline mr-3">Ver</a>
+                                        <button onclick="confirmarDelete('{% url 'app:admin_delete' 'problema' item.id %}')" class="text-red-500 hover:text-red-700 font-bold hover:underline">Excluir</button>
+                                    </td>
+
+                                {% elif categoria == 'comentarios' %}
+                                    <td class="px-6 py-4 text-gray-700 italic">"{{ item.texto|truncatechars:80 }}"</td>
+                                    <td class="px-6 py-4 text-gray-500 font-medium">{{ item.autor.username }}</td>
+                                    <td class="px-6 py-4 text-xs text-gray-400">
+                                        Em: <a href="{% url 'app:detalhe_ideia' item.ideia.id %}" target="_blank" class="hover:text-blue-500 hover:underline">{{ item.ideia.titulo|truncatechars:20 }}</a>
+                                    </td>
+                                    <td class="px-6 py-4 text-gray-400 text-xs">{{ item.data_criacao|date:"d/m H:i" }}</td>
+                                    <td class="px-6 py-4 text-right">
+                                        <button onclick="confirmarDelete('{% url 'app:admin_delete' 'comentario' item.id %}')" class="text-red-500 hover:text-red-700 font-bold bg-red-50 px-3 py-1 rounded hover:bg-red-100 transition-colors">
+                                            Excluir
+                                        </button>
+                                    </td>
+
+                                {% elif categoria == 'usuarios' %}
+                                    <td class="px-6 py-4 font-bold text-gray-900">{{ item.username }}</td>
+                                    <td class="px-6 py-4 text-gray-500">{{ item.email }}</td>
+                                    <td class="px-6 py-4">
+                                        {% if item.is_superuser %}
+                                            <span class="text-xs font-bold bg-purple-100 text-purple-700 px-2 py-1 rounded">Admin</span>
+                                        {% else %}
+                                            <span class="text-xs font-bold bg-gray-100 text-gray-600 px-2 py-1 rounded">Padrão</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="px-6 py-4 text-right">
+                                        {% if not item.is_superuser %}
+                                        <button onclick="confirmarDelete('{% url 'app:admin_delete' 'usuario' item.id %}')" class="text-red-500 hover:text-red-700 font-bold hover:underline">Banir</button>
+                                        {% endif %}
+                                    </td>
+                                {% endif %}
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="px-6 py-12 text-center text-gray-400">
+                                    Nenhum item encontrado nesta categoria.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+</body>
+</html>

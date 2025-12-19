@@ -1,14 +1,15 @@
 # app/views.py
 
 from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth import login
 from django.db.models import Count, Q, F
-from .models import Ideia, Comentario, Votacao, Problema
+from .models import Ideia, Comentario, Votacao, Problema, CustomUsuario
 from .forms import IdeiaForm, CustomUserCreationForm, ProblemaForm, ComentarioForm, EditarPerfilForm, CadastroForm
 from django.contrib import messages
 from django.http import JsonResponse
 from django.urls import reverse
+
 
 def lista_ideias(request):
     filtro = request.GET.get('filtro', 'recentes')
@@ -319,3 +320,75 @@ def api_live_search(request):
             })
 
     return JsonResponse({'results': results})
+
+def is_superuser(user):
+    return user.is_superuser
+
+@login_required
+@user_passes_test(is_superuser)
+def painel_admin(request):
+    # Estatísticas Gerais
+    total_users = CustomUsuario.objects.count()
+    total_ideias = Ideia.objects.count()
+    total_problemas = Problema.objects.count()
+    total_comentarios = Comentario.objects.count()
+
+    # Listas Recentes (para o Dashboard Admin)
+    ultimos_usuarios = CustomUsuario.objects.order_by('-date_joined')[:5]
+    ultimas_ideias = Ideia.objects.order_by('-data_criacao')[:5]
+    ultimos_problemas = Problema.objects.order_by('-data_criacao')[:5]
+
+    return render(request, 'painel_admin.html', {
+        'total_users': total_users,
+        'total_ideias': total_ideias,
+        'total_problemas': total_problemas,
+        'total_comentarios': total_comentarios,
+        'ultimos_usuarios': ultimos_usuarios,
+        'ultimas_ideias': ultimas_ideias,
+        'ultimos_problemas': ultimos_problemas,
+    })
+
+@login_required
+@user_passes_test(is_superuser)
+def admin_lista(request, categoria):
+    # Gerencia as listas completas (clicando na Sidebar)
+    items = []
+    titulo = ""
+    
+    if categoria == 'ideias':
+        items = Ideia.objects.all().order_by('-data_criacao')
+        titulo = "Gerenciar Ideias"
+    elif categoria == 'problemas':
+        items = Problema.objects.all().order_by('-data_criacao')
+        titulo = "Gerenciar Problemas"
+    elif categoria == 'usuarios':
+        items = CustomUsuario.objects.all().order_by('-date_joined')
+        titulo = "Gerenciar Usuários"
+    elif categoria == 'comentarios':
+        items = Comentario.objects.all().order_by('-data_criacao')
+        titulo = "Gerenciar Comentários"
+    
+    return render(request, 'admin_lista.html', {
+        'items': items,
+        'categoria': categoria,
+        'titulo': titulo
+    })
+
+@login_required
+@user_passes_test(is_superuser)
+def admin_delete(request, tipo, id_item):
+    # Função genérica para deletar itens
+    if tipo == 'usuario':
+        item = get_object_or_404(CustomUsuario, id=id_item)
+    elif tipo == 'ideia':
+        item = get_object_or_404(Ideia, id=id_item)
+    elif tipo == 'problema':
+        item = get_object_or_404(Problema, id=id_item)
+    elif tipo == 'comentario':
+        item = get_object_or_404(Comentario, id=id_item)
+    
+    item.delete()
+    messages.success(request, 'Item removido com sucesso.')
+    
+    # Tenta voltar para a página anterior, se não der, vai pro painel
+    return redirect(request.META.get('HTTP_REFERER', 'app:painel_admin'))

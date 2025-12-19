@@ -62,7 +62,17 @@ urlpatterns = [
         template_name='registration/password_reset_complete.html'
     ), name='password_reset_complete'),
 
-    
+
     path('perfil/editar/', views.editar_perfil, name='editar_perfil'),
     path('api/live-search/', views.api_live_search, name='api_live_search'),
+
+    # Rota do Painel Admin
+    path('gestao-interna/', views.painel_admin, name='painel_admin'),
+    
+    # Rota para deletar itens (genérica)
+    path('gestao-interna/delete/<str:tipo>/<int:id_item>/', views.admin_delete, name='admin_delete'),
+    path('gestao-interna/lista/<str:categoria>/', views.admin_lista, name='admin_lista'),
+    
+    # Rota de Delete (Mantenha ou verifique se está igual)
+    path('gestao-interna/delete/<str:tipo>/<int:id_item>/', views.admin_delete, name='admin_delete'),
 ]
