@@ -5,20 +5,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Locus{% endblock %}</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
         body { font-family: 'Inter', sans-serif; }
+        
+        /* Links do Footer */
         .footer-link { position: relative; display: inline-block; transition: all 0.2s; }
         .footer-link:hover { padding-left: 4px; color: #052e16; font-weight: 600; }
+        
+        /* Animações */
         @keyframes fadeInDown {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-.animate-fade-in-down {
-    animation: fadeInDown 0.5s ease-out forwards;
-}
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in-down {
+            animation: fadeInDown 0.5s ease-out forwards;
+        }
     </style>
+    
     {% block extra_css %}{% endblock %}
 </head>
 <body class="h-full flex flex-col antialiased text-slate-800">
@@ -52,7 +59,6 @@
                         </a>
                         {% endif %}
                     </div>
-                    
                 </div>
 
                 <div class="flex items-center gap-4">
@@ -60,20 +66,13 @@
                     <div class="hidden lg:block relative group w-72">
                         <form action="{% url 'app:pesquisa' %}" method="get" autocomplete="off">
                             <div class="relative">
-                                <input type="search" 
-                                       id="live-search-input" 
-                                       name="q" 
-                                       data-url="{% url 'app:api_live_search' %}" 
-                                       placeholder="Pesquisar..." 
-                                       class="w-full pl-4 pr-10 py-2 bg-gray-100 border-2 border-transparent rounded-full text-sm focus:border-[#2F7E32] focus:bg-white focus:outline-none transition-all">
+                                <input type="search" id="live-search-input" name="q" data-url="{% url 'app:api_live_search' %}" placeholder="Pesquisar..." class="w-full pl-4 pr-10 py-2 bg-gray-100 border-2 border-transparent rounded-full text-sm focus:border-[#2F7E32] focus:bg-white focus:outline-none transition-all">
                                 <button type="submit" class="absolute right-3 top-2.5 text-gray-400 group-focus-within:text-[#2F7E32]">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                                 </button>
                             </div>
                         </form>
-
-                        <div id="live-search-results" class="absolute top-full left-0 w-full bg-white rounded-xl shadow-2xl border border-gray-100 mt-2 overflow-hidden hidden z-[100]">
-                            </div>
+                        <div id="live-search-results" class="absolute top-full left-0 w-full bg-white rounded-xl shadow-2xl border border-gray-100 mt-2 overflow-hidden hidden z-[100]"></div>
                     </div>
 
                     <button id="mobile-menu-btn" class="md:hidden text-gray-600 p-2 hover:bg-gray-100 rounded-lg">
@@ -92,9 +91,7 @@
                             <form action="{% url 'app:logout' %}" method="post" class="ml-1">
                                 {% csrf_token %}
                                 <button type="submit" title="Sair do sistema" class="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-full transition-all">
-                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                                    </svg>
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
                                 </button>
                             </form>
                         </div>
@@ -189,6 +186,7 @@
     </footer>
 
     <script>
+        // === Menu Mobile ===
         const btn = document.getElementById('mobile-menu-btn');
         const menu = document.getElementById('mobile-menu');
         if(btn){
@@ -197,6 +195,7 @@
             });
         }
 
+        // === Live Search (Busca em Tempo Real) ===
         const searchInput = document.getElementById('live-search-input');
         const searchResults = document.getElementById('live-search-results');
         let timeout = null;
@@ -255,161 +254,151 @@
                 }
             });
         }
+
+        // === Helpers para AJAX ===
         function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
                 }
             }
+            return cookieValue;
         }
-        return cookieValue;
-    }
 
-    function votarAjax(ideiaId, tipo, btnElement) {
-        const url = `/ideia/${ideiaId}/votar/${tipo}/`;
-        const csrftoken = getCookie('csrftoken');
+        // === Votação AJAX (Upvote/Downvote) ===
+        function votarAjax(ideiaId, tipo, btnElement) {
+            const url = `/ideia/${ideiaId}/votar/${tipo}/`;
+            const csrftoken = getCookie('csrftoken');
 
-        // Feedback visual imediato (opcional: diminui a opacidade enquanto carrega)
-        btnElement.style.opacity = '0.7';
+            btnElement.style.opacity = '0.7';
 
-        fetch(url, {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': csrftoken,
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        })
-        .then(response => {
-            if (response.status === 401) {
-                window.location.href = "{% url 'app:login' %}";
-                return;
-            }
-            return response.json();
-        })
-        .then(data => {
-            btnElement.style.opacity = '1';
-            
-            if (data.status === 'ok') {
-                // Atualiza os números na tela
-                const spanUp = document.getElementById(`count-up-${ideiaId}`);
-                const spanDown = document.getElementById(`count-down-${ideiaId}`);
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken,
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => {
+                if (response.status === 401) {
+                    window.location.href = "{% url 'app:login' %}";
+                    return;
+                }
+                return response.json();
+            })
+            .then(data => {
+                btnElement.style.opacity = '1';
                 
-                if(spanUp) spanUp.textContent = data.total_upvotes;
-                if(spanDown) spanDown.textContent = data.total_downvotes;
+                if (data.status === 'ok') {
+                    const spanUp = document.getElementById(`count-up-${ideiaId}`);
+                    const spanDown = document.getElementById(`count-down-${ideiaId}`);
+                    
+                    if(spanUp) spanUp.textContent = data.total_upvotes;
+                    if(spanDown) spanDown.textContent = data.total_downvotes;
 
-                // Atualiza as cores dos botões
-                atualizarBotoes(ideiaId, data.voto_usuario);
+                    atualizarBotoes(ideiaId, data.voto_usuario);
+                }
+            })
+            .catch(error => console.error('Erro:', error));
+        }
+
+        function atualizarBotoes(ideiaId, estado) {
+            const btnUp = document.getElementById(`btn-up-${ideiaId}`);
+            const btnDown = document.getElementById(`btn-down-${ideiaId}`);
+
+            const greenFilled = ['bg-[#2F7E32]', 'text-white', 'border-[#2F7E32]', 'shadow-md'];
+            const greenOutline = ['bg-green-50', 'text-[#2F7E32]', 'border-green-100'];
+            const redFilled = ['bg-red-600', 'text-white', 'border-red-600', 'shadow-md'];
+            const redOutline = ['bg-gray-50', 'text-gray-500', 'border-gray-100'];
+
+            if(btnUp) {
+                btnUp.classList.remove(...greenFilled);
+                btnUp.classList.add(...greenOutline);
             }
-        })
-        .catch(error => console.error('Erro:', error));
-    }
+            if(btnDown) {
+                btnDown.classList.remove(...redFilled);
+                btnDown.classList.add(...redOutline);
+            }
 
-    function atualizarBotoes(ideiaId, estado) {
-        // Pega os botões pelo ID específico
-        const btnUp = document.getElementById(`btn-up-${ideiaId}`);
-        const btnDown = document.getElementById(`btn-down-${ideiaId}`);
-
-        // Classes para Verde (Upvote)
-        const greenFilled = ['bg-[#2F7E32]', 'text-white', 'border-[#2F7E32]', 'shadow-md'];
-        const greenOutline = ['bg-green-50', 'text-[#2F7E32]', 'border-green-100'];
-
-        // Classes para Vermelho (Downvote)
-        const redFilled = ['bg-red-600', 'text-white', 'border-red-600', 'shadow-md'];
-        const redOutline = ['bg-gray-50', 'text-gray-500', 'border-gray-100'];
-
-        // Reseta ambos para o estado "Outline" (Vazio)
-        if(btnUp) {
-            btnUp.classList.remove(...greenFilled);
-            btnUp.classList.add(...greenOutline);
-        }
-        if(btnDown) {
-            btnDown.classList.remove(...redFilled);
-            btnDown.classList.add(...redOutline);
+            if (estado === 'upvote' && btnUp) {
+                btnUp.classList.remove(...greenOutline);
+                btnUp.classList.add(...greenFilled);
+            } else if (estado === 'downvote' && btnDown) {
+                btnDown.classList.remove(...redOutline);
+                btnDown.classList.add(...redFilled);
+            }
         }
 
-        // Aplica o estilo preenchido dependendo do estado atual
-        if (estado === 'upvote' && btnUp) {
-            btnUp.classList.remove(...greenOutline);
-            btnUp.classList.add(...greenFilled);
-        } else if (estado === 'downvote' && btnDown) {
-            btnDown.classList.remove(...redOutline);
-            btnDown.classList.add(...redFilled);
-        }
-    }
-    function enviarComentarioAjax(event, ideiaId) {
-        event.preventDefault(); // Impede o recarregamento
-        
-        const form = event.target;
-        const textarea = form.querySelector('textarea[name="texto_comentario"]');
-        const texto = textarea.value;
-        const url = `/ideia/${ideiaId}/comentar-ajax/`;
-        const csrftoken = getCookie('csrftoken');
-        const btnSubmit = form.querySelector('button[type="submit"]');
+        // === Comentário AJAX ===
+        function enviarComentarioAjax(event, ideiaId) {
+            event.preventDefault(); 
+            
+            const form = event.target;
+            const textarea = form.querySelector('textarea[name="texto_comentario"]');
+            const texto = textarea.value;
+            const url = `/ideia/${ideiaId}/comentar-ajax/`;
+            const csrftoken = getCookie('csrftoken');
+            const btnSubmit = form.querySelector('button[type="submit"]');
 
-        if (!texto.trim()) return; // Não envia vazio
+            if (!texto.trim()) return;
 
-        // Feedback visual (desabilita botão)
-        btnSubmit.disabled = true;
-        btnSubmit.style.opacity = '0.7';
+            btnSubmit.disabled = true;
+            btnSubmit.style.opacity = '0.7';
 
-        const formData = new FormData();
-        formData.append('texto_comentario', texto);
+            const formData = new FormData();
+            formData.append('texto_comentario', texto);
 
-        fetch(url, {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': csrftoken,
-                'X-Requested-With': 'XMLHttpRequest'
-            },
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === 'ok') {
-                // 1. Limpa o campo
-                textarea.value = '';
-                btnSubmit.disabled = false;
-                btnSubmit.style.opacity = '1';
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken,
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'ok') {
+                    textarea.value = '';
+                    btnSubmit.disabled = false;
+                    btnSubmit.style.opacity = '1';
 
-                // 2. Atualiza o contador
-                const contador = document.getElementById('contador-comentarios');
-                if(contador) contador.textContent = data.total_comentarios;
+                    const contador = document.getElementById('contador-comentarios');
+                    if(contador) contador.textContent = data.total_comentarios;
 
-                // 3. Remove mensagem de "Seja o primeiro" se existir
-                const vazio = document.getElementById('comentarios-vazio');
-                if(vazio) vazio.remove();
+                    const vazio = document.getElementById('comentarios-vazio');
+                    if(vazio) vazio.remove();
 
-                // 4. Cria o HTML do novo comentário
-                const htmlNovoComentario = `
-                    <div class="flex gap-4 group animate-fade-in-down">
-                        <div class="h-10 w-10 rounded-full bg-white border border-gray-200 flex-shrink-0 flex items-center justify-center font-bold text-gray-600 shadow-sm">
-                            ${data.autor_inicial}
-                        </div>
-                        <div class="bg-white p-4 rounded-2xl rounded-tl-none shadow-sm border border-gray-100 flex-grow group-hover:border-green-200 transition-colors border-l-4 border-l-[#2F7E32]">
-                            <div class="flex justify-between items-center mb-2">
-                                <h4 class="font-bold text-gray-900 text-sm">${data.autor_nome}</h4>
-                                <span class="text-xs text-green-600 font-bold">Novo!</span>
+                    const htmlNovoComentario = `
+                        <div class="flex gap-4 group animate-fade-in-down">
+                            <div class="h-10 w-10 rounded-full bg-white border border-gray-200 flex-shrink-0 flex items-center justify-center font-bold text-gray-600 shadow-sm">
+                                ${data.autor_inicial}
                             </div>
-                            <p class="text-gray-700 text-sm leading-relaxed">${data.texto}</p>
+                            <div class="bg-white p-4 rounded-2xl rounded-tl-none shadow-sm border border-gray-100 flex-grow group-hover:border-green-200 transition-colors border-l-4 border-l-[#2F7E32]">
+                                <div class="flex justify-between items-center mb-2">
+                                    <h4 class="font-bold text-gray-900 text-sm">${data.autor_nome}</h4>
+                                    <span class="text-xs text-green-600 font-bold">Novo!</span>
+                                </div>
+                                <p class="text-gray-700 text-sm leading-relaxed">${data.texto}</p>
+                            </div>
                         </div>
-                    </div>
-                `;
+                    `;
 
-                // 5. Insere no topo da lista
-                const lista = document.getElementById('lista-comentarios');
-                lista.insertAdjacentHTML('afterbegin', htmlNovoComentario);
-            }
-        })
-        .catch(error => {
-            console.error('Erro:', error);
-            btnSubmit.disabled = false;
-        });
-    }
+                    const lista = document.getElementById('lista-comentarios');
+                    lista.insertAdjacentHTML('afterbegin', htmlNovoComentario);
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                btnSubmit.disabled = false;
+            });
+        }
     </script>
 </body>
 </html>

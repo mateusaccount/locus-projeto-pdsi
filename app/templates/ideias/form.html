@@ -115,17 +115,14 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Seleciona inputs de texto, email, selects e textareas
         const inputs = document.querySelectorAll('input[type="text"], input[type="email"], select, textarea');
         
         inputs.forEach(input => {
-            // Remove classes antigas que possam estar causando conflito
             input.className = ''; 
             
-            // Adiciona classes novas com TEXT-GRAY-900 (Preto suave) forçado
             input.classList.add(
                 'block', 'w-full', 'px-5', 'py-4', 
-                'text-gray-900', 'bg-gray-50', // Texto escuro, fundo cinza claro
+                'text-gray-900', 'bg-gray-50',
                 'border', 'border-gray-200', 'rounded-xl', 
                 'placeholder-gray-400',
                 'focus:bg-white', 'focus:outline-none', 'focus:ring-2', 'focus:ring-[#2F7E32]', 'focus:border-transparent',
@@ -138,13 +135,11 @@
             }
         });
 
-        // Estiliza o input de arquivo especificamente para ficar oculto (já que usamos o label customizado)
         const fileInput = document.querySelector('input[type="file"]');
         if (fileInput) {
             fileInput.classList.add('hidden');
             fileInput.addEventListener('change', function() {
                 const fileName = this.files[0] ? this.files[0].name : 'Nenhum arquivo selecionado';
-                // Encontra o texto "Clique para enviar..." e atualiza
                 const labelText = this.parentElement.querySelector('p.mb-2');
                 if(labelText) labelText.innerHTML = `<span class="font-semibold text-[#2F7E32]">Arquivo selecionado:</span> ${fileName}`;
             });

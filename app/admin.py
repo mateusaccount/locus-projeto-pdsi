@@ -25,7 +25,6 @@ class IdeiaAdmin(admin.ModelAdmin):
         return obj.usuarios_que_reportaram.count()
     contagem_reports.short_description = 'Nº de Denúncias'
 
-# Removi o @admin.register aqui para evitar duplicidade
 class ComentarioAdmin(admin.ModelAdmin):
     list_display = ('autor', 'texto', 'ideia', 'data_criacao')
     search_fields = ('texto', 'autor__username')
@@ -35,6 +34,5 @@ class ComentarioAdmin(admin.ModelAdmin):
 admin.site.register(CustomUsuario, CustomUserAdmin)
 admin.site.register(Problema, ProblemaAdmin)
 admin.site.register(Ideia, IdeiaAdmin)
-# Agora registramos o Comentario passando a classe Admin dele explicitamente
 admin.site.register(Comentario, ComentarioAdmin) 
 admin.site.register(Votacao)

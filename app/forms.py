@@ -113,23 +113,57 @@ class CustomLoginForm(AuthenticationForm):
         self.fields['password'].label = ''
 
 class EditarPerfilForm(forms.ModelForm):
-    class Meta:
-        model = User
-        fields = ['first_name', 'last_name', 'email', 'username']
-        labels = {
-            'first_name': 'Nome',
-            'last_name': 'Sobrenome',
-            'email': 'E-mail',
-            'username': 'Nome de Usuário'
-        }
+    username = forms.CharField(
+        label="Nome de Usuário", 
+        required=True, 
+        help_text="Será usado para fazer login.",
+        widget=forms.TextInput(attrs={'placeholder': 'Seu login de acesso'})
+    )
+    first_name = forms.CharField(
+        label="Nome", 
+        required=False, 
+        widget=forms.TextInput(attrs={'placeholder': 'Seu primeiro nome'})
+    )
+    last_name = forms.CharField(
+        label="Sobrenome", 
+        required=False, 
+        widget=forms.TextInput(attrs={'placeholder': 'Seu sobrenome'})
+    )
+    email = forms.EmailField(label="E-mail", required=True)
+    curso_departamento = forms.CharField(label="Curso ou Departamento", required=False)
 
+    class Meta:
+        model = CustomUsuario
+        fields = ['username', 'first_name', 'last_name', 'email', 'curso_departamento']
+
+    def __init__(self, *args, **kwargs):
+        super(EditarPerfilForm, self).__init__(*args, **kwargs)
+        
+        if self.instance and self.instance.pk and self.instance.is_superuser:
+            self.fields['email'].required = False
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        
+        if self.instance.is_superuser and not email:
+            return ""
+            
+        if email and CustomUsuario.objects.filter(email=email).exclude(pk=self.instance.pk).exists():
+            raise forms.ValidationError("Este e-mail já está em uso por outro usuário.")
+            
+        return email
+
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        if username and CustomUsuario.objects.filter(username=username).exclude(pk=self.instance.pk).exists():
+            raise forms.ValidationError("Este nome de usuário já está em uso. Escolha outro.")
+            
+        return username
+    
 class CadastroForm(UserCreationForm):
-    # Forçamos esses campos a serem obrigatórios e traduzidos
     first_name = forms.CharField(label="Nome Completo", max_length=150, required=True)
     email = forms.EmailField(label="E-mail", required=True)
 
     class Meta:
         model = CustomUsuario
-        # Incluímos apenas os campos do MODELO. 
-        # As senhas NÃO entram aqui porque o UserCreationForm já as adiciona automaticamente.
         fields = ('username', 'first_name', 'email')
