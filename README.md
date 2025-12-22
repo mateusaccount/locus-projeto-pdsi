@@ -1,7 +1,7 @@
 # Plataforma de Gestão de Ideias e Problemas
 
 ## Sobre o projeto
-Sistema web colaborativo desenvolvido em Django que permite aos usuários relatar problemas e sugerir ideias de melhoria. A plataforma fomenta o engajamento comunitário através de funcionalidades de votação (upvote/downvote), comentários em tempo real e um sistema de gamificação que classifica os usuários em níveis (de "Iniciante" a "Líder Comunitário") com base em sua participação.
+Sistema web colaborativo desenvolvido em Django que permite aos usuários relatar problemas e sugerir ideias de melhoria. A plataforma fomenta o engajamento comunitário através de funcionalidades de votação (gostei/não gostei), comentários em tempo real e um sistema de gamificação que classifica os usuários em níveis (de "Iniciante" a "Líder Comunitário") com base em sua participação.
 
 ## Tecnologias Utilizadas
 - Python 3.13.5
@@ -137,7 +137,7 @@ LOCUS-PROJETO-PDSI/
 
 - Autenticação de usuários (registro, login, logout)
 - Sistema de Gamificação (cálculo de engajamento e níveis de usuário)
-- Gestão de Ideias (submissão, votação upvote/downvote e comentários)
+- Gestão de Ideias (submissão, votação gostei/não gostei e comentários)
 - Relato de Problemas (categorização por área e vínculo com soluções)
 - Busca Inteligente (pesquisa instantânea "Live Search" e filtros)
 - Painel administrativo
